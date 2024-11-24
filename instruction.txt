@@ -25,7 +25,7 @@ change mail_link according to the name of your project name and folder name
 manually change reports logo 
 admin\assets\dist\img
 
-if you will change this image "pipoicon.png" go to admin>pages>reports>logics-builder-pdf.php(line 184)
+if you will change this image "smile_republic.jpg" go to admin>pages>reports>logics-builder-pdf.php(line 184)
 
 manually change image in logics-builder.pdf
 for admin:

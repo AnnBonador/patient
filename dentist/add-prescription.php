@@ -41,7 +41,7 @@ include('../admin/config/dbconn.php');
                                 <div class="form-group">
                                     <label>Select Patient</label>
                                     <span class="text-danger">*</span>
-                                    <select class="form-control select2 patients" name="select_patient" style="width: 100%;" required>
+                                    <select class="form-control patient" name="select_patient" style="width: 100%;" required>
                                     <option selected disabled value="">Select Patient</option>
                                     <?php
                                         if(isset($_GET['id']))
@@ -125,26 +125,13 @@ include('../admin/config/dbconn.php');
 <?php include('includes/scripts.php');?>
 <script>
      $(function () {
-    $('#advice_note').summernote({
-        height: 150,
-    })
+    initializeSummernote("#advice_note");
 
-    $('.select2').select2()
+    initializeDatepickerAndPreventInput('#presdate');
 
-      $(".patients").select2({
-      placeholder: "Select Patient",
-      allowClear: true
-      });
+    initializeSelect2(".patient","Select Patient");
 
-      $(".doctor").select2({
-      placeholder: "Select Dentist",
-      allowClear: true
-      });
 
-    $('#presdate').datepicker({
-      todayHighlight: true,
-      clearBtn: true,
-    })
   })
 </script>
 <?php include('includes/footer.php');?>

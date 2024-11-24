@@ -55,6 +55,7 @@
 <script src="../../assets/plugins/inputmask/jquery.inputmask.bundle.min.js"></script>
 <script src="../../assets/dist/js/countrystatecity.js"></script>
 <script src="../../assets/dist/js/validation.js"></script>
+<script src="../../assets/dist/js/custom.js"></script>
 <script>
     $.widget.bridge('uibutton', $.ui.button)
 </script>

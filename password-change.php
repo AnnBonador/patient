@@ -15,7 +15,7 @@ include('includes/header.php');
                 <?php
                 include('admin/message.php');
                 ?>
-                <form action="password-reset-code.php" method="post">
+                <form action="password-change-link.php" method="post">
                     <input type="hidden" name="password_token" value="<?php if (isset($_GET['token'])) {
                                                                             echo $_GET['token'];
                                                                         } ?>">

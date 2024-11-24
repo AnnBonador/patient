@@ -52,6 +52,7 @@
 <!-- Summernote -->
 <script src="../admin/assets/plugins/summernote/summernote-bs4.min.js"></script>
 <script src="../admin/assets/plugins/inputmask/jquery.inputmask.bundle.min.js"></script>
+<script src="../admin/assets/dist/js/custom.js"></script>
 <script>
     $.widget.bridge('uibutton', $.ui.button)
 </script>

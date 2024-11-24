@@ -9,7 +9,8 @@ use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 
-function send_password_reset($get_name, $get_email, $token, $mail_link, $mail_host, $mail_username, $mail_password)
+
+function send_password_reset($system_name,$get_email, $token, $mail_link, $mail_host, $mail_username, $mail_password)
 {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
@@ -20,7 +21,7 @@ function send_password_reset($get_name, $get_email, $token, $mail_link, $mail_ho
     $mail->SMTPSecure = 'tls';
     $mail->Port       = 587;
 
-    $mail->setFrom($mail_username, $get_name);
+    $mail->setFrom($mail_username,$system_name);
     $mail->addAddress($get_email);
     $mail->isHTML(true);
     $mail->Subject = 'Reset Password Notification';
@@ -34,58 +35,78 @@ function send_password_reset($get_name, $get_email, $token, $mail_link, $mail_ho
     $mail->Body = $email_template;
     try {
         $mail->send();
-        echo "Message has been sent";
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
 }
-if (isset($_POST['password_reset_link'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $token = md5(rand());
 
-    $check_email = "SELECT email FROM users WHERE email='$email' LIMIT 1";
-    $check_email_run = mysqli_query($conn, $check_email);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (mysqli_num_rows($check_email_run) > 0) {
-        $row = mysqli_fetch_array($check_email_run);
-        $get_name = $row['name'];
-        $get_email = $row['email'];
-        $get_status = $row['status'];
+    $response = ['success' => false, 'message' => '', 'errors' => []];
 
-        $sql = "SELECT role FROM users WHERE email='$email' ";
-        $query_run = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($query_run) > 0) {
-            foreach ($query_run as $row) {
-                $role = $row['role'];
+    if (isset($_POST['email']) && !empty($_POST['email'])) {
+
+        $email = mysqli_real_escape_string($conn, $_POST['email']); 
+
+        if (empty($response['errors'])) {
+
+            $token = md5(rand());
+
+            $check_email = "SELECT email, name, status FROM users WHERE email='$email' LIMIT 1";
+            $check_email_run = mysqli_query($conn, $check_email);
+
+            if (mysqli_num_rows($check_email_run) > 0) {
+                
+                $row = mysqli_fetch_array($check_email_run, MYSQLI_ASSOC); 
+                
+                if (isset($row['name'], $row['email'], $row['status'])) {
+                    $get_email = $row['email'];
+                    $get_status = $row['status'];
+
+                    $sql = "SELECT role FROM users WHERE email='$email'";
+                    $query_run = mysqli_query($conn, $sql);
+                    if (mysqli_num_rows($query_run) > 0) {
+                        $role_row = mysqli_fetch_array($query_run, MYSQLI_ASSOC);
+                        $role = $role_row['role'];
+                    }
+
+                    if ($role == 'admin') {
+                        $update_token = "UPDATE tbladmin SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
+                    } else if ($role == '2') {
+                        $update_token = "UPDATE tbldoctor SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
+                    } else if ($role == '3') {
+                        $update_token = "UPDATE tblstaff SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
+                    } else if ($role == 'patient') {
+                        $update_token = "UPDATE tblpatient SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
+                    }
+
+                    $update_token_run = mysqli_query($conn, $update_token);
+
+                    if ($update_token_run) {
+                        // Send the password reset email
+                        send_password_reset($system_name,$get_email, $token, $mail_link, $mail_host, $mail_username, $mail_password);
+                        $response['success'] = true;
+                        $response['message'] = 'We emailed you a password reset link.';
+                    } else {
+                        $response['message'] = 'Something went wrong, please try again.';
+                    }
+                } else {
+                    $response['message'] = 'Missing data in the database response.';
+                }
+            } else {
+                $response['message'] = 'No account found with that email.';
             }
-        }
-        if ($role == 'admin') {
-            $update_token = "UPDATE tbladmin SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
-            $update_token_run = mysqli_query($conn, $update_token);
-        } else if ($role == '2') {
-            $update_token = "UPDATE tbldoctor SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
-            $update_token_run = mysqli_query($conn, $update_token);
-        } else if ($role == '3') {
-            $update_token = "UPDATE tblstaff SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
-            $update_token_run = mysqli_query($conn, $update_token);
-        } else if ($role == 'patient') {
-            $update_token = "UPDATE tblpatient SET verify_token='$token' WHERE email='$get_email' LIMIT 1";
-            $update_token_run = mysqli_query($conn, $update_token);
+        } else {
+            $response['message'] = 'Please correct the errors below.';
         }
 
-        if ($update_token_run) {
-            send_password_reset($get_name, $get_email, $token, $mail_link, $mail_host, $mail_username, $mail_password);
-            $_SESSION['info'] = "We emailed you a password reset link";
-            header("Location:password-reset.php");
-        } else {
-            $_SESSION['error'] = "Something went wrong";
-            header("Location:password-reset.php");
-        }
+        echo json_encode($response);
     } else {
-        $_SESSION['error'] = "No Email Found";
-        header("Location:password-reset.php");
+        $response['errors']['email'] = 'Email is required.';
+        echo json_encode($response);
     }
 }
+
 
 if (isset($_POST['update_password'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);

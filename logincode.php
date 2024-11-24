@@ -2,75 +2,77 @@
 session_start();
 include('admin/config/dbconn.php');
 
-if (isset($_POST['login_btn'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
+$response = ['success' => false, 'message' => '', 'errors' => []];
 
-    // Query to fetch user by email
-    $sql = "SELECT * FROM users WHERE email='$email'";
-    $result = mysqli_query($conn, $sql);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-        $user_id = $row['id'];
-        $user_fname = $row['name'];
-        $user_email = $row['email'];
-        $role_as = $row['role'];
-        $user_status = $row['status'];
+    if (empty($email)) {
+        $response['errors']['email'] = 'Email is required.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $response['errors']['email'] = 'Invalid email format.';
+    }
 
-        // Verify the password
-        if (password_verify($password, $row['password'])) {
-            if ($user_status == '1') {
-                // Successful login
-                $_SESSION['auth'] = true;
-                $_SESSION['auth_role'] = $role_as;
-                $_SESSION['auth_user'] = [
-                    'user_id' => $user_id,
-                    'user_fname' => $user_fname,
-                    'user_email' => $user_email
-                ];
+    if (empty($password)) {
+        $response['errors']['password'] = 'Password is required.';
+    }
 
-                // Redirect based on role
-                switch ($role_as) {
-                    case 'admin':
-                        header('Location: admin/pages/dashboard');
-                        break;
-                    case '3':
-                        header('Location: staff/index.php');
-                        break;
-                    case '2':
-                        header('Location: dentist/index.php');
-                        break;
-                    case 'patient':
-                        header('Location: patient/index.php');
-                        break;
-                    default:
-                        $_SESSION['danger'] = "Access Denied";
-                        header('Location: login.php');
+    if (empty($response['errors'])) {
+        $query = "SELECT * FROM users WHERE email = '$email'";
+        $result = mysqli_query($conn, $query);
+
+        if ($result && mysqli_num_rows($result) > 0) {
+            $user = mysqli_fetch_assoc($result);
+
+            $user_status = $user['status'];
+
+            if (password_verify($password, $user['password'])) {
+
+                if ($user_status == '1') {
+                    $_SESSION['auth'] = true;
+                    $_SESSION['auth_role'] = $user['role'];
+                    $_SESSION['auth_user'] = [
+                        'user_id' => $user['id'],
+                        'user_fname' => $user['name'],
+                        'user_email' => $user['email']
+                    ];
+
+                    // Define redirect URLs based on roles
+                    $role_redirects = [
+                        'admin' => 'admin/pages/dashboard',
+                        'patient' => 'patient/index.php',
+                        '2' => 'dentist/index.php',
+                        '3' => 'staff/index.php'
+                    ];
+
+                    // Check role and redirect accordingly
+                    if (array_key_exists($user['role'], $role_redirects)) {
+                        $response['success'] = true;
+                        $response['redirect'] = $role_redirects[$user['role']];
+                    } else {
+                        $response['message'] = 'Access Denied for your role.';
+                    }
+                } elseif ($user_status == '4') {
+                    // Account not confirmed
+                    $response['message'] = "You have not confirmed your account yet. Please check your inbox and verify your email.";
+                } else {
+                    // Account disabled
+                    $response['message'] = "Your account is temporarily disabled. Please contact the admin.";
                 }
-                exit();
-            } elseif ($user_status == '4') {
-                // Account not confirmed
-                $_SESSION['danger'] = "You have not confirmed your account yet. Please check your inbox and verify your email.";
             } else {
-                // Account disabled
-                $_SESSION['danger'] = "Your account is temporarily disabled. Please contact the admin.";
+                $response['message'] = 'Invalid username or password.';
             }
         } else {
-            // Incorrect password
-            $_SESSION['error'] = "Incorrect Email or Password.";
+            $response['message'] = 'Invalid username or password.';
         }
-    } else {
-        // No user found
-        $_SESSION['error'] = "No account found with this email.";
     }
-    header('Location: login.php');
-    exit();
 } else {
     // Unauthorized access to this file
-    $_SESSION['error'] = "Access Denied.";
-    header('Location: patients.php');
-    exit();
+    $_SESSION['message'] = "Access Denied.";
+    // header('Location: patients.php');
+    $response['redirect'] = 'patients.php';
 }
-?>
+
+echo json_encode($response);

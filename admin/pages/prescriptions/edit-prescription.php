@@ -192,24 +192,12 @@ include('../../config/dbconn.php');
                     ['table', ['table']],
                     ['view', ['undo', 'redo', 'fullscreen', 'codeview', 'help']]
                 ]
-            })
-
-            $('.select2').select2()
-
-            $(".patient").select2({
-                placeholder: "Select Patient",
-                allowClear: true
             });
 
-            $(".doctor").select2({
-                placeholder: "Select Doctor",
-                allowClear: true
-            });
+            initializeDatepickerAndPreventInput('#presdate');
 
-            $('#presdate').datepicker({
-                todayHighlight: true,
-                clearBtn: true,
-            })
+            initializeSelect2(".doctor","Select Dentist");
+            initializeSelect2(".patient","Select Patient");
 
             var userid = $('#edit_id').val();
             //console.log(userid);

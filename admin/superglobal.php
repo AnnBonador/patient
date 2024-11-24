@@ -20,7 +20,7 @@ if (mysqli_num_rows($query_run) > 0) {
 }
 
 global $mail_username, $mail_host, $mail_password, $mail_link, $mail_host, $mail_username, $mail_password;
-$mail_link = 'https://smilerepublicph.com';
+$mail_link = 'http://localhost/patient';
 
 $sql = "SELECT * FROM mail_settings LIMIT 1";
 $query_run = mysqli_query($conn, $sql);
@@ -28,7 +28,7 @@ $query_run = mysqli_query($conn, $sql);
 if (mysqli_num_rows($query_run) > 0) {
     foreach ($query_run as $row) {
         $mail_host = $row['host'];
-      $mail_username = $row['username'];
+        $mail_username = $row['username'];
         $mail_password = $row['password'];
     }
 }

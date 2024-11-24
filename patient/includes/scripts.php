@@ -70,6 +70,10 @@
 			});
 		}
 
+		$(document).on('click', '.logoutbtn', function() {
+            $('#logoutModal').modal('show');
+        });
+
 		load_unseen_notification();
 		$(document).on('click', '.notification', function() {
 			$('.count').html('');

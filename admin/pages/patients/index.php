@@ -90,7 +90,7 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Birthdate</label>
                     <span class="text-danger">*</span>
-                    <input type="text" autocomplete="off" name="birthday" class="form-control" id="datepicker" required>
+                    <input type="text" autocomplete="off" name="birthday" class="form-control" id="birthday" required>
                   </div>
                 </div>
                 <div class="col-sm-6">
@@ -490,6 +490,9 @@ include('../../config/dbconn.php');
 
     $(document).ready(function() {
 
+      initializeDatepickerAndPreventInput('#birthday');
+      initializeDatepickerAndPreventInput('#edit_dob');
+      
       $(document).on('click', '.viewbtn', function() {
         var userid = $(this).data('id');
 
