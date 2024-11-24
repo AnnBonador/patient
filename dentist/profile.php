@@ -63,7 +63,7 @@ include('../admin/config/dbconn.php');
                                                             <div class="form-group col-md-4">
                                                                 <label for="">Birthdate</label>
                                                                 <span class="text-danger">*</span>
-                                                                <input type="text" autocomplete="off" id="datepicker" name="birthday" value="<?= $row['dob'] ?>" class="form-control" required>
+                                                                <input type="text" autocomplete="off" id="birthday" name="birthday" value="<?= $row['dob'] ?>" class="form-control" required>
                                                             </div>
                                                             <div class="form-group col-md-2">
                                                                 <label for="">Gender</label>
@@ -167,6 +167,8 @@ include('../admin/config/dbconn.php');
         <?php include('includes/scripts.php'); ?>
         <script>
             $(document).ready(function() {
+
+                initializeDatepickerAndPreventInput('#birthday');
 
                 $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
                     localStorage.setItem('activeTab', $(e.target).attr('href'));
