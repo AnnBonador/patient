@@ -1,0 +1,76 @@
+admin@gmail.com
+Admin123*
+
+sql file in sql folder
+-----------------------------------------------------
+change database connection in admin>config
+-dbconn.php
+-sspconn.php
+
+change database connection in patient>config
+-config.php
+-----------------------------------------------------
+admin>superglobal.php
+change mail_link according to the name of your project name and folder name
+-example in localhost:$mail_link = 'http://localhost/Smiles';
+-example in web host:$mail_link = 'https://pedc.online';
+
+dentist>includes>globals>superglobal
+change mail_link according to the name of your project name and folder name
+
+staff>includes>globals>superglobal
+change mail_link according to the name of your project name and folder name
+
+------------------------------------------------------
+manually change reports logo 
+admin\assets\dist\img
+
+if you will change this image "pipoicon.png" go to admin>pages>reports>logics-builder-pdf.php(line 184)
+
+manually change image in logics-builder.pdf
+for admin:
+admin>fpdf184>logics-builder.pdf
+
+for dentist and staff
+dentist>logics-builder.pdf
+staff>logics-builder.pdf
+---------------------------------------------------------
+in Admin Page, no password in adding patient
+admin>pages>patients>patient-action
+
+$password = 'pass123';
+$confirmPassword = 'pass123';
+
+if you created a patient in admin the above codes are the password
+
+--------------------------------------------------TWILIO-------------------------
+STEP 1
+Which Twilio product are you here to use? SMS
+
+What do you plan to build with Twilio? Alerts & Notifications
+
+How do you want to build with Twilio?
+With code
+Customize exactly what you want
+
+What is your preferred coding language? PHP	
+
+Would you like Twilio to host your code?
+Yes, host my code on Twilio
+
+STEP 2
+
+Get a Twilio phone number 
+
+Get Account Info
+-Account SID
+-Auth Token
+-My Twilio phone number
+
+STEP 3 
+
+In sidebar menu click th #PHONE NUMBERS
+>PHONE NUMBERS>MANAGE>VERIFIED CALLER ID
+
+Add a new Caller ID
+
