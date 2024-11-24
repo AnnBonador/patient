@@ -19,7 +19,7 @@ if (mysqli_num_rows($query_run) > 0) {
 }
 
 global $mail_username, $mail_host, $mail_password, $mail_link, $mail_host, $mail_username, $mail_password;
-$mail_link = 'https://www.smilerepublicph.com';
+$mail_link = 'http://localhost/patient';
 
 $sql = "SELECT * FROM mail_settings LIMIT 1";
 $query_run = mysqli_query($conn, $sql);

@@ -35,43 +35,86 @@ if (isset($_SESSION['auth'])) {
         }
         ?>
         <div class="card card-outline card-primary shadow">
-            <div class="card-body login-card-body">
-                <a href="index.php">
-                    <h3 class="login-box-msg text-danger font-weight-bold"><?php echo $system_name ?></h3>
-                </a>
-                <p class="login-box-msg">Sign in</p>
-                <?php include('admin/message.php'); ?>
-                <form action="logincode.php" method="post">
-                    <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" required />
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
-                            </div>
+        <div class="card-body login-card-body">
+            <h3 class="login-box-msg text-danger font-weight-bold">System Name</h3>
+            <p class="login-box-msg">Sign in</p>
+            <?php include('admin/message.php'); ?>
+            <div id="alert-message" class="alert alert-danger d-none" role="alert"></div>
+            <form id="login-form">
+                <div class="input-group mb-3">
+                    <input type="email" name="email" id="email" class="form-control" placeholder="Email" />
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
                         </div>
                     </div>
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password" id="password" required />
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <i class="fas fa-eye" id="eye"></i>
-                            </div>
+                    <div class="invalid-feedback" id="email-error"></div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" />
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <i class="fas fa-eye"></i>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <button type="submit" name="login_btn" class="btn btn-outline-primary btn-block">Log In</button>
-                    </div>
-                </form>
-                <p class="mb-1">
-                    <a href="password-reset.php">Forgot password?</a>
-                </p>
-                <p class="mb-0">
-                    <a href="register.php" class="text-center">Create Account</a>
-                </p>
-            </div>
+                    <div class="invalid-feedback" id="password-error"></div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-outline-primary btn-block">Log In</button>
+                </div>
+            </form>
+            <p class="mb-1">
+                <a href="password-reset.php">Forgot password?</a>
+            </p>
+            <p class="mb-0">
+                <a href="register.php" class="text-center">Create Account</a>
+            </p>
         </div>
     </div>
 </body>
 
 </html>
 <?php include('includes/scripts.php'); ?>
+<script>
+    $(document).ready(function () {
+        $('#login-form').on('submit', function (e) {
+            e.preventDefault(); 
+
+            $('.invalid-feedback').text('');
+            $('.form-control').removeClass('is-invalid');
+            $('#alert-message').addClass('d-none').text('');
+
+            const formData = {
+                email: $('#email').val(),
+                password: $('#password').val()
+            };
+
+            $.ajax({
+                url: 'logincode.php',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = response.redirect;
+                    } else {
+                        if (response.message) {
+                            $('#alert-message').removeClass('d-none').text(response.message);
+                        }
+
+                        if (response.errors) {
+                            if (response.errors.email) {
+                                $('#email-error').text(response.errors.email);
+                                $('#email').addClass('is-invalid');
+                            }
+                            if (response.errors.password) {
+                                $('#password-error').text(response.errors.password);
+                                $('#password').addClass('is-invalid');
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>

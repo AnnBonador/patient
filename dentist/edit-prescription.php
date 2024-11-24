@@ -57,7 +57,7 @@ include('../admin/config/dbconn.php');
                                         <div class="form-group">
                                             <label>Select Patient</label>
                                             <span class="text-danger">*</span>
-                                            <select class="form-control select2 patient" id="edit_patient" name="select_patient" style="width: 100%;" required>
+                                            <select class="form-control patient" id="edit_patient" name="select_patient" style="width: 100%;" required>
                                             <?php
                                                 if(isset($_GET['id']))
                                                 {
@@ -182,31 +182,12 @@ include('../admin/config/dbconn.php');
 <?php include('includes/scripts.php');?>
 <script>
      $(function () {
-    $('.summernote').summernote({
-        height: 150,
-        toolbar: [
-                [ 'style', [ 'style' ] ],
-                [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
-                [ 'fontname', [ 'fontname' ] ],
-                [ 'fontsize', [ 'fontsize' ] ],
-                [ 'color', [ 'color' ] ],
-                [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
-                [ 'table', [ 'table' ] ],
-                [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ] ]
-		    ]
-    })
 
-    $('.select2').select2()
+    initializeSummernote("#edit_advice");
 
-      $(".patient").select2({
-      placeholder: "Select Patient",
-      allowClear: true
-      });
+    initializeDatepickerAndPreventInput('#presdate');
 
-    $('#presdate').datepicker({
-      todayHighlight: true,
-      clearBtn: true,
-    })
+    initializeSelect2(".patient","Select Patient");
 
     var userid = $('#edit_id').val();
     //console.log(userid);

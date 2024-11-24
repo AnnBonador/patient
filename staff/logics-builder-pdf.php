@@ -181,7 +181,7 @@ class LB_PDF extends FPDF
     {
         if ($this->pageHeaderRepeat || (!$this->pageHeaderRepeat && !$this->pageHeaderAdded)) {
             // Logo
-            $this->Image('../admin/assets/dist/img/pipoicon.png', $this->GetX(), $this->GetY(), 30);
+            $this->Image('../admin/assets/dist/img/smile_republic.jpg', $this->GetX(), $this->GetY(), 30);
             // Times bold 13
             $this->SetFont('Times', '', 18);
             $this->SetTextColor(191, 0, 0);

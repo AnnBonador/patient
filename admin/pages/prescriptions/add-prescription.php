@@ -147,29 +147,15 @@ include('../../config/dbconn.php');
     <?php include('../../includes/scripts.php'); ?>
     <script>
         $(function() {
-            $('#medicine_note').summernote({
-                height: 150,
-            })
-            $('#advice_note').summernote({
-                height: 150,
-            })
 
-            $('.select2').select2()
+            initializeSummernote("#medicine_note");
+            initializeSummernote("#advice_note");
 
-            $(".patient").select2({
-                placeholder: "Select Patient",
-                allowClear: true
-            });
+            initializeDatepickerAndPreventInput('#presdate');
 
-            $(".doctor").select2({
-                placeholder: "Select Dentist",
-                allowClear: true
-            });
+            initializeSelect2(".doctor","Select Dentist");
+            initializeSelect2(".patient","Select Patient");
 
-            $('#presdate').datepicker({
-                todayHighlight: true,
-                clearBtn: true,
-            })
         })
     </script>
     <?php include('../../includes/footer.php'); ?>
