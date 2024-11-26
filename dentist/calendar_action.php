@@ -37,7 +37,7 @@
                         </tr>
                         <tr>
                             <th class="text-muted">Time:</th>
-                            <td><?php echo date('h:i A',strtotime($row['starttime'])).' - '.date('h:i A',strtotime($row['endtime'])); ?></td>
+                            <td><?php echo date('h:i A',strtotime($row['starttime'])); ?></td>
                         </tr>
                         <tr>
                             <th class="text-muted">Treatment:</th>

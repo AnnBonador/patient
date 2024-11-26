@@ -4,7 +4,11 @@ include('../../config/dbconn.php');
 
 if (isset($_POST['insert_schedule'])) {
     $doc_id = $_POST['select_dentist'];
-    $day = $_POST['select_day'];
+
+    $days = $_POST['days'];
+    $daysArray = array_map('ucfirst', $days);
+    $dayJson = json_encode($daysArray);
+
     $s_time = $_POST['start_time'];
     $e_time = $_POST['end_time'];
     $duration = $_POST['select_duration'];
@@ -25,7 +29,7 @@ if (isset($_POST['insert_schedule'])) {
         $_SESSION['error'] = "The doctor selected already have a schedule on that day";
         header('Location:index.php');
     } else {
-        $sql = "INSERT INTO schedule (doc_id,doc_name,day,starttime,endtime,duration) VALUES ('$doc_id','$doc_name','$day','$s_time','$e_time','$duration')";
+        $sql = "INSERT INTO schedule (doc_id,doc_name,day,starttime,endtime,duration) VALUES ('$doc_id','$doc_name','$dayJson','$s_time','$e_time','$duration')";
         $query_run = mysqli_query($conn, $sql);
 
         if ($query_run) {
@@ -59,12 +63,15 @@ if (isset($_POST['checking_editbtn'])) {
 if (isset($_POST['update_sched'])) {
     $id = $_POST['edit_id'];
 
-    $day = $_POST['select_day'];
+    $days = $_POST['days'];
+    $daysArray = array_map('ucfirst', $days);
+    $dayJson = json_encode($daysArray);
+
     $s_time = $_POST['start_time'];
     $e_time = $_POST['end_time'];
     $duration = $_POST['select_duration'];
 
-    $sql = "UPDATE schedule set day='$day',starttime='$s_time',endtime='$e_time', duration='$duration' WHERE id='$id' ";
+    $sql = "UPDATE schedule set day='$dayJson',starttime='$s_time',endtime='$e_time', duration='$duration' WHERE id='$id' ";
     $query_run = mysqli_query($conn, $sql);
 
     if ($query_run) {

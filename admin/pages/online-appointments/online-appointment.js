@@ -674,203 +674,95 @@ $(document).ready(function () {
     }
   });
 
-  $("#scheddate1").datepicker({});
-  $("#scheddate2").datepicker({});
+  initializeSelect2(".patient", "Select Patient");
+	initializeSelect2(".dentist", "Select Dentist");
+	initializeSelect2(".treatment", "Select Treatment");
+	initializeSelect2("#edit_reason", "Select Service");
+  initializeCalendarDate("#scheddateEdit");
 
-  $(".select2").select2();
+  initializeCalendarDate("#scheddateEdit");
 
-  $("#selectedPatient").on("change", function () {
-    var patientID = $("#selectedPatient").val();
-    $("#preferredDentist").val("");
-    $("#preferredDate").val("");
-    $("#preferredDentist").select2({
-      allowClear: true,
-      placeholder: "Select Dentist",
-      ajax: {
-        url: "appointment_action.php",
-        type: "GET",
-        dataType: "json",
-        delay: 250,
-        data: function (params) {
-          return {
-            getDoctors: patientID,
-          };
-        },
-        processResults: function (response) {
-          return {
-            results: response,
-          };
-        },
-        cache: true,
-      },
-    });
-    $("#preferredDate").select2({
-      allowClear: true,
-      placeholder: "Available Date",
-      ajax: {
-        url: "appointment_action.php",
-        type: "GET",
-        dataType: "json",
-        delay: 250,
-        data: function (params) {
-          return {
-            doctorIdDate: selectedDentistId,
-            patientId: patientID,
-          };
-        },
-        processResults: function (response) {
-          return {
-            results: response,
-          };
-        },
-        cache: true,
-      },
-    });
-  });
+  handleTimeSlotClick(".edit-time-slot", "#selected-time-slotEdit", "slot");
 
-  $("#preferredDentist").on("change", function () {
-    var selectedDentistId = $("#preferredDentist").val();
-    var patientID = $("#selectedPatient").val();
-    $("#preferredDate").val("");
-    $("#preferredDate").select2({
-      allowClear: true,
-      placeholder: "Available Date",
-      ajax: {
-        url: "appointment_action.php",
-        type: "GET",
-        dataType: "json",
-        delay: 250,
-        data: function (params) {
-          return {
-            doctorIdDate: selectedDentistId,
-            patientId: patientID,
-          };
-        },
-        processResults: function (response) {
-          return {
-            results: response,
-          };
-        },
-        cache: true,
-      },
-    });
-  });
+  validateFormSubmission("#edit-appointment", "#selected-time-slotEdit");
 
-  $("#edit_dentist").on("change", function () {
-    var selectedDentistId = $("#edit_dentist").val();
-    var patientID = $("#edit_patient").val();
-    $("#edit_sched").empty().trigger("change");
-    $("#edit_schedTime").empty().trigger("change");
-    $("#edit_sched").select2({
-      allowClear: true,
-      placeholder: "Available Date",
-      ajax: {
-        url: "online_action.php",
-        type: "GET",
-        dataType: "json",
-        delay: 250,
-        data: function (params) {
-          return {
-            doctorIdDate: selectedDentistId,
-            patientId: patientID,
-          };
-        },
-        processResults: function (response) {
-          return {
-            results: response,
-          };
-        },
-        cache: true,
-      },
-    }).on('change', function(e) {
-         var data = $(this).select2('data')[0]?? '';
-         var infoValue = data.info ?? '';
-      console.log(infoValue);
-  
-      var select2Config = {
-        allowClear: true,
-        placeholder: "Select Service"
-      };
-      
-      if (infoValue == 30) {
-        select2Config.minimumResultsForSearch = Infinity;
-        select2Config.maximumSelectionLength = 1;
-      } else if (infoValue == 60) {
-        select2Config.minimumResultsForSearch = Infinity;
-        select2Config.maximumSelectionLength = 2;
-      } else if (infoValue == 120) {
-        select2Config.minimumResultsForSearch = Infinity;
-        select2Config.maximumSelectionLength = 4;
-      } else if (infoValue == 180) {
-        select2Config.minimumResultsForSearch = Infinity;
-        select2Config.maximumSelectionLength = 6;
-      }
-      // // Update select2 configuration options for service select box
-      $('#edit_reason').select2('destroy').select2(select2Config);
-     });
-  });
-  $("#edit_sched").on("change", function () {
-    var selectedSchedId = $("#edit_sched").val();
-    var patientID = $("#edit_patient").val();
-    $("#edit_schedTime").empty().trigger("change");
-    $("#edit_schedTime").select2({
-      allowClear: true,
-      placeholder: "Available Timeslot",
-      ajax: {
-        url: "online_action.php",
-        type: "POST",
-        dataType: "json",
-        delay: 250,
-        data: function (params) {
-          return {
-            selectedDateId: selectedSchedId,
-            patientId: patientID,
-          };
-        },
-        processResults: function (response) {
-          return {
-            results: response,
-          };
-        },
-        cache: true,
-      },
-    });
-  });
-  $(".select2").select2();
-  $(".select2").on("select2:open", function () {
-    $(".select2-selection__choice__remove").addClass("select2-remove-right");
-  });
-  $(".patient").select2({
-    placeholder: "Select Patient",
-    allowClear: true,
-  });
-  $(".treatment").select2({
-    placeholder: "Select Treatment",
-    allowClear: true,
-  });
+	$("#preferredDentistEdit").change(function () {
+		const selectedDoctorId = $(this).val();
 
-  $(".dentist").select2({
-    placeholder: "Select Dentist",
-    allowClear: true,
-  });
+		$("#scheddateEdit").val("");
+    $("#selected-time-slotEdit").val("");
+		$("#time-slotsEdit").empty();
+		$("#scheddateEdit").off("changeDate");
+		$("#scheddateEdit").datepicker("destroy").datepicker({
+			autoclose: true,
+			startDate: new Date(),
+		});
 
-  $("#preferredDate").select2({
-    placeholder: "Available Date",
-    allowClear: true,
-  });
-  $("#edit_reason").select2({
-    placeholder: "Select Service",
-    allowClear: true,
-  });
+		if (selectedDoctorId) {
+			$.ajax({
+				url: "online_action.php",
+				type: "GET",
+				data: {
+					dentist: true,
+					doctor_id: selectedDoctorId,
+				},
+				dataType: "json",
+				success: function (doctor) {
+					// Check if there is an error in the response
+					if (doctor.error) {
+						// Display a custom error message
+						const errorMessage =
+							"Sorry, the schedule for the selected doctor is not available. Please choose another doctor or try again later.";
+						$("#time-slotsEdit").html(`<div class="col-12 text-danger">${errorMessage}</div>`);
+						return; // Exit the function to prevent further execution
+					}
 
-  $("#edit_sched").select2({
-    placeholder: "Select Date",
-    allowClear: true,
-  });
-  $("#edit_schedTime").select2({
-    placeholder: "Select Time",
-    allowClear: true,
-  });
+					const availableDays = doctor.available_days;
+					const disabledDays = [0, 1, 2, 3, 4, 5, 6].filter(
+						(day) => !availableDays.includes(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day])
+					);
+
+					$("#scheddateEdit").datepicker("setDaysOfWeekDisabled", disabledDays);
+
+					$("#scheddateEdit").on("changeDate", function (e) {
+						const selectedDate = e.format();
+
+						$.ajax({
+							url: "online_action.php",
+							type: "GET",
+							data: {
+								timeslots: true,
+								doctor_id: selectedDoctorId,
+								date: selectedDate,
+							},
+							dataType: "json",
+							success: function (response) {
+								// Check if available_time_slots is an empty array
+								if (response.available_time_slots && response.available_time_slots.length > 0) {
+									let slotsHtml = '<div class="col-12"><h5>Available Time Slots:</h5></div>';
+									response.available_time_slots.forEach((slot) => {
+										slotsHtml += ` <button type="button" class="col-md-2 btn btn-outline-primary edit-time-slot" data-slot="${slot}">${slot}</button>`;
+									});
+									$("#time-slotsEdit").html(slotsHtml);
+								} else {
+									// Display the custom message for no available time slots
+									const noSlotsMessage =
+										"Sorry, the time slot for the selected doctor is not available. Please choose another doctor or try again later.";
+									$("#time-slotsEdit").html(`<div class="col-12 text-danger">${noSlotsMessage}</div>`);
+								}
+							},
+							error: function (error) {
+								console.log("Error fetching time slots:", error);
+							},
+						});
+					});
+				},
+				error: function (error) {
+					console.log("Error fetching doctor schedule:", error);
+				},
+			});
+		}
+	});
 
   const colorBox = document.getElementById("edit_color");
 
@@ -912,8 +804,6 @@ $(document).ready(function () {
 
   $(document).on("click", ".editbtn", function () {
     var schedid = $(this).data("id");
-    $("#edit_sched").empty().trigger("change");
-    $("#edit_schedTime").empty().trigger("change");
 
     $.ajax({
       type: "post",
@@ -925,30 +815,18 @@ $(document).ready(function () {
       success: function (response) {
         $("#edit_id").val(response["id"]);
         $("#edit_patient_id").val(response["patient_id"]);
-        $("#edit_patient").val(response["patient_id"]);
-        $("#edit_patient").select2().trigger("change");
-        $("#edit_dentist").val(response["doc_id"]);
-        $("#edit_dentist").select2().trigger("change");
+        $("#edit_patient").val(response["patient_id"]).trigger("change");
+        $("#preferredDentistEdit").val(response["doc_id"]).trigger("change");
+        $("#scheddateEdit").val(response["schedule"]); 
+        $("#selected-time-slotEdit").val(response["starttime"]);
+        loadAvailableTimeSlotsForEdit(response["doc_id"], response["schedule"]);
         var services = response["reason"].split(",");
-        $("#edit_reason").val(services);
-        $("#edit_reason").trigger("change");
+        $("#edit_reason").val(services).trigger("change");
         $("#edit_status").val(response["status"]);
         $("#edit_color").val(response["bgcolor"]);
-        $("#edit_schedule").val(response["schedule"]);
-        var newOption = new Option(
-          response["schedule"],
-          response["sched_id"],
-          true,
-          false
-        );
-        $("#edit_sched").append(newOption).trigger("change");
-        var newOpt = new Option(
-          response["time"],
-          response["time"],
-          true,
-          false
-        );
-        $("#edit_schedTime").append(newOpt).trigger("change");
+        $("#editFollowUp").val(response["follow_up"]);
+
+        $("#editFollowUp").prop("checked", response["follow_up"] == 1);
 
         $("#EditOnlineAppModal").modal("show");
       },
@@ -981,3 +859,31 @@ $(document).ready(function () {
     }
   });
 });
+
+function loadAvailableTimeSlotsForEdit(doctorId, selectedDate) {
+  $.ajax({
+    url: "online_action.php", // Endpoint to fetch available time slots
+    type: "GET",
+    data: {
+      timeslots: true,
+      doctor_id: doctorId,
+      date: selectedDate,
+    },
+    dataType: "json",
+    success: function (response) {
+      if (response.available_time_slots && response.available_time_slots.length > 0) {
+        let slotsHtml = '<div class="col-12"><h5>Available Time Slots:</h5></div>';
+        response.available_time_slots.forEach(function (slot) {
+          slotsHtml += `<button type="button" class="col-md-2 btn btn-outline-primary edit-time-slot" data-slot="${slot}">${slot}</button>`;
+        });
+        $("#time-slotsEdit").html(slotsHtml);
+      } else {
+        const noSlotsMessage = "Sorry, no available time slots for the selected doctor. Please try again later.";
+        $("#time-slotsEdit").html(`<div class="col-12 text-danger">${noSlotsMessage}</div>`);
+      }
+    },
+    error: function (error) {
+      console.log("Error fetching time slots:", error);
+    },
+  });
+}

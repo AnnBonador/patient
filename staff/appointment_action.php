@@ -64,7 +64,6 @@ function sendEmail($patient_name, $patient_email, $patient_date, $patient_time, 
                     Preferred Date: ' . $patient_date . '<br>
                     Time: ' . $patient_time . '</p>
                     <p>Treatment: ' . $treatment . '</p>
-                    <p>Reminder: Don\'t forget to wear face mask to reduce the spread of the coronavirus</p>
                     <p>Thank you!<br>
                     ' . $system_name . ' Team</p>';
     $mail->Body = $email_template;

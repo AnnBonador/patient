@@ -31,11 +31,10 @@ $pdf->SetAligns(array('C', 'L', 'L', 'L', 'L', 'L', 'L'));
 
 $pdf->AddTableHeader($titlesArr);
 
-$sql= "SELECT CONCAT(fname,' ',lname) as fullname, s.day, t.teeth,t.treatment, d.name ,t.complaint
+$sql= "SELECT CONCAT(fname,' ',lname) as fullname, t.visit, t.teeth,t.treatment, d.name ,t.complaint
 FROM tblpatient p 
 INNER JOIN treatment t ON t.patient_id = p.id
 INNER JOIN tbldoctor d ON d.id = t.doc_id
-LEFT JOIN schedule s ON s.id = t.visit
 where t.created_at between '$fromMysql' and '$toMysql' and t.doc_id='$user' order by t.id asc";
 $results = mysqli_query($conn,$sql);
 $i = 0;
@@ -43,7 +42,7 @@ while($row = mysqli_fetch_assoc($results))
 {
         $i++;
         $data = array($i, 
-        date('Y-m-d',strtotime($row['day'])),
+        date('Y-m-d',strtotime($row['visit'])),
             $row['fullname'],
             $row['treatment'],
             $row['teeth'],

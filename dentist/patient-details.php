@@ -567,7 +567,7 @@ include('../admin/config/dbconn.php');
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <?= date('d-M-Y', strtotime($user['schedule'])) ?></td>
-                                                                                            <td><?= $user['starttime'] . ' - ' . $user['endtime'] ?></td>
+                                                                                            <td><?= $user['starttime'] ?></td>
                                                                                             <td><?= $user['dname'] ?></td>
                                                                                             <td>
                                                                                                 <?php

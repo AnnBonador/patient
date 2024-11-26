@@ -54,7 +54,6 @@
 <script src="../../assets/plugins/summernote/summernote-bs4.min.js"></script>
 <script src="../../assets/plugins/inputmask/jquery.inputmask.bundle.min.js"></script>
 <script src="../../assets/dist/js/countrystatecity.js"></script>
-<script src="../../assets/dist/js/validation.js"></script>
 <script src="../../assets/dist/js/custom.js"></script>
 <script>
     $.widget.bridge('uibutton', $.ui.button)
@@ -142,36 +141,7 @@
         $('#password-strength').css('width', '100%').removeClass('bg-warning').addClass('bg-success');
     }
 }
-        function load_unseen_notification(view = '') {
-            $.ajax({
-                url: "fetch_notification.php",
-                method: "POST",
-                data: {
-                    view: view
-                },
-                dataType: "json",
-                success: function(data) {
-                    $('.dropdown-notif').html(data.notification);
-                    if (data.unseen_notification > 0) {
-                        $('.count').html(data.unseen_notification);
-                    }
-                }
-            });
-        }
 
-        load_unseen_notification();
-
-        $(document).on('click', '.notification', function() {
-            $('.count').html('');
-            load_unseen_notification('yes');
-        });
-
-        setInterval(function() {
-            load_unseen_notification();;
-        }, 5000);
-
-        // $("#phone").inputmask({"mask": "999999999999"});
-        // $("#edit_phone").inputmask({"mask": "999999999999"});
 
     });
 </script>

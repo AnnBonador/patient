@@ -1,6 +1,6 @@
 <?php
 
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'u424539041_pedcdb');
-define('DB_USERNAME', 'u424539041_pedc');
-define('DB_PASSWORD', 'Jayvee123*');
+define('DB_NAME', 'u642540313_smiles_db');
+define('DB_USERNAME', 'u642540313_dentalclinic');
+define('DB_PASSWORD', 'Bbkoh0810*');

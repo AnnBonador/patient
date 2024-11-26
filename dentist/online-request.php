@@ -25,7 +25,7 @@ include('../admin/config/dbconn.php');
             </button>
           </div>
 
-          <form action="online_action.php" method="POST" id="edit">
+          <form action="online_action.php" method="POST" id="edit-appointment">
             <div class="modal-body">
               <div class="row">
                 <div class="col-sm-12">
@@ -33,8 +33,6 @@ include('../admin/config/dbconn.php');
                     <input type="hidden" name="edit_id" id="edit_id">
                     <input type="hidden" name="select_patient" id="edit_patient_id">
                     <input type="hidden" name="select_dentist" id="edit_dentist_id">
-                    <input type="hidden" name="sched_id" id="sched_id">
-                    <input type="hidden" id="edit_schedule">
                     <label>Select Patient</label>
                     <span class="text-danger">*</span>
                     <select class="select2 patient" name="" id="edit_patient" style="width:100%;" required disabled>
@@ -56,20 +54,19 @@ include('../admin/config/dbconn.php');
                     </select>
                   </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-12">
                   <div class="form-group">
-                    <label>Appointment Date</label>
+                    <label for="scheddateEdit">Appointment Date</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2" name="scheddate" id="edit_sched" style="width:100%;" required disabled>
-                    </select>
+                    <input type="text" id="scheddateEdit" name="scheddate" class="form-control" autocomplete="off" readonly required>
                   </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-12">
                   <div class="form-group">
-                    <label>Appointment Time</label>
-                    <span class="text-danger">*</span>
-                    <select class="form-control select2" name="schedTime" id="edit_schedTime" style="width:100%;" required disabled>
-                    </select>
+                    <div id="time-slotsEdit" class="row">
+                      <!-- Dynamic time slots will appear here -->
+                    </div>
+                    <input type="hidden" id="selected-time-slotEdit" name="selected_time_slot">
                   </div>
                 </div>
                 <div class="col-sm-12">
@@ -117,6 +114,14 @@ include('../admin/config/dbconn.php');
                       <option style="color:#3c8dbc;" value="#3c8dbc"> Light Blue</option>
                       <option style="color:#f56954;" value="#f56954"> Red</option>
                     </select>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                      <input class="custom-control-input ck" type="checkbox" id="editFollowUp" name="follow_up">
+                      <label for="editFollowUp" class="custom-control-label">Yes, schedule a follow-up</label>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-12">
@@ -1009,7 +1014,14 @@ include('../admin/config/dbconn.php');
 
       $(document).ready(function() {
 
-        $('.select2').select2()
+        initializeSelect2(".patient", "Select Patient");
+        initializeSelect2("#edit_reason", "Select Service");
+
+        initializeCalendarDate("#scheddateEdit");
+
+        handleTimeSlotClick(".edit-time-slot", "#selected-time-slotEdit", "slot");
+
+        validateFormSubmission("#edit-appointment", "#selected-time-slotEdit");
 
         $("#selectedPatient").on("change", function() {
           var patientID = $('#selectedPatient').val();
@@ -1143,41 +1155,6 @@ include('../admin/config/dbconn.php');
             }
           });
         });
-        $(".select2").select2();
-        $('.select2').on('select2:open', function() {
-          $('.select2-selection__choice__remove').addClass('select2-remove-right');
-        });
-        $(".patient").select2({
-          placeholder: "Select Patient",
-          allowClear: true
-        });
-        $(".treatment").select2({
-          placeholder: "Select Treatment",
-          allowClear: true
-        });
-
-        $(".dentist").select2({
-          placeholder: "Select Dentist",
-          allowClear: true
-        });
-
-        $("#preferredDate").select2({
-          placeholder: "Available Date",
-          allowClear: true
-        });
-        $("#edit_reason").select2({
-          placeholder: "Select Service",
-          allowClear: true
-        });
-
-        $("#edit_sched").select2({
-          placeholder: "Select Date",
-          allowClear: true
-        });
-        $("#edit_schedTime").select2({
-          placeholder: "Select Time",
-          allowClear: true
-        });
 
         const colorBox = document.getElementById('edit_color');
 
@@ -1215,8 +1192,6 @@ include('../admin/config/dbconn.php');
 
         $(document).on('click', '.editbtn', function() {
           var schedid = $(this).data('id');
-          $("#edit_sched").empty().trigger('change')
-          $("#edit_schedTime").empty().trigger('change')
 
           $.ajax({
             type: 'post',
@@ -1226,24 +1201,53 @@ include('../admin/config/dbconn.php');
               'app_id': schedid,
             },
             success: function(response) {
-              $('#edit_id').val(response['id']);
-              $('#edit_patient_id').val(response['patient_id']);
-              $('#edit_patient').val(response['patient_id']);
-              $('#sched_id').val(response['sched_id']);
-              $('#edit_patient').select2().trigger('change');
-              $('#edit_dentist_id').val(response['doc_id']);
-              $('#edit_dentist').val(response['doc_id']);
-              $('#edit_dentist').select2().trigger('change');
+
+              var selectedDoctorId = response["doc_id"];
+
+              $("#edit_id").val(response["id"]);
+              $("#edit_patient_id").val(response["patient_id"]);
+              $("#edit_patient").val(response["patient_id"]).trigger("change");
+              $("#edit_dentist_id").val(response["doc_id"]);
+              $("#preferredDentistEdit").val(response["doc_id"]).trigger("change");
+              $("#scheddateEdit").val(response["schedule"]);
+              $("#selected-time-slotEdit").val(response["starttime"]);
+              loadAvailableTimeSlotsForEdit(response["doc_id"], response["schedule"]);
               var services = response['reason'].split(",");
-              $('#edit_reason').val(services);
-              $('#edit_reason').trigger('change');
-              $('#edit_status').val(response['status']);
-              $('#edit_color').val(response['bgcolor']);
-              $('#edit_schedule').val(response['schedule']);
-              var newOption = new Option(response['schedule'], response['sched_id'], true, false);
-              $('#edit_sched').append(newOption).trigger('change');
-              var newOpt = new Option(response['time'], response['time'], true, false);
-              $('#edit_schedTime').append(newOpt).trigger('change');
+              $("#edit_reason").val(services).trigger("change");
+              $("#edit_status").val(response["status"]);
+              $("#edit_color").val(response["bgcolor"]);
+              $("#editFollowUp").val(response["follow_up"]);
+              $("#editFollowUp").prop("checked", response["follow_up"] == 1);
+
+              $.ajax({
+                url: "online_action.php",
+                type: "GET",
+                data: {
+                  dentist: true,
+                  doctor_id: selectedDoctorId,
+                },
+                dataType: "json",
+                success: function(doctor) {
+                  // Check if there is an error in the response
+                  if (doctor.error) {
+                    // Display a custom error message
+                    const errorMessage =
+                      "Sorry, the schedule for the selected doctor is not available. Please choose another doctor or try again later.";
+                    $("#time-slotsEdit").html(`<div class="col-12 text-danger">${errorMessage}</div>`);
+                    return; // Exit the function to prevent further execution
+                  }
+
+                  const availableDays = doctor.available_days;
+                  const disabledDays = [0, 1, 2, 3, 4, 5, 6].filter(
+                    (day) => !availableDays.includes(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day])
+                  );
+
+                  $("#scheddateEdit").datepicker("setDaysOfWeekDisabled", disabledDays);
+                },
+                error: function(error) {
+                  console.log("Error fetching doctor schedule:", error);
+                },
+              });
 
               $('#EditOnlineAppModal').modal('show');
             }
@@ -1273,6 +1277,34 @@ include('../admin/config/dbconn.php');
         });
       });
     });
+
+    function loadAvailableTimeSlotsForEdit(doctorId, selectedDate) {
+      $.ajax({
+        url: "online_action.php", // Endpoint to fetch available time slots
+        type: "GET",
+        data: {
+          timeslots: true,
+          doctor_id: doctorId,
+          date: selectedDate,
+        },
+        dataType: "json",
+        success: function(response) {
+          if (response.available_time_slots && response.available_time_slots.length > 0) {
+            let slotsHtml = '<div class="col-12"><h5>Available Time Slots:</h5></div>';
+            response.available_time_slots.forEach(function(slot) {
+              slotsHtml += `<button type="button" class="col-md-2 btn btn-outline-primary edit-time-slot" data-slot="${slot}">${slot}</button>`;
+            });
+            $("#time-slotsEdit").html(slotsHtml);
+          } else {
+            const noSlotsMessage = "Sorry, no available time slots for the selected doctor. Please try again later.";
+            $("#time-slotsEdit").html(`<div class="col-12 text-danger">${noSlotsMessage}</div>`);
+          }
+        },
+        error: function(error) {
+          console.log("Error fetching time slots:", error);
+        },
+      });
+    }
   </script>
 
   <?php include('includes/footer.php'); ?>

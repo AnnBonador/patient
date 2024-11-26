@@ -68,7 +68,7 @@ include('includes/sidebar.php');
                                                             <div class="form-group col-md-4">
                                                                 <label for="">Birthdate</label>
                                                                 <span class="text-danger">*</span>
-                                                                <input type="text" autocomplete="off" id="datepicker" name="birthday" value="<?= $row['dob'] ?>" class="form-control" required>
+                                                                <input type="text" autocomplete="off" id="birthday" name="birthday" value="<?= $row['dob'] ?>" class="form-control" required>
                                                             </div>
                                                             <div class="form-group col-md-2">
                                                                 <label for="">Gender</label>
@@ -161,6 +161,9 @@ include('includes/sidebar.php');
         <?php include('includes/scripts.php'); ?>
         <script>
             $(document).ready(function() {
+
+                initializeDatepickerAndPreventInput('#birthday');
+                
                 $('#password').keyup(function() {
                     if ($(this).val().length == 0) {
                         $('.show_hide').hide();

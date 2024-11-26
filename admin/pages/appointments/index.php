@@ -19,14 +19,14 @@ include('../../config/dbconn.php');
             </button>
           </div>
 
-          <form action="appointment_action.php" method="POST">
+          <form action="appointment_action.php" id="create-appointment" method="POST">
             <div class="modal-body">
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label>Select Patient</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2 patient" name="select_patient" id="selectedPatient" style="width: 100%;" required>
+                    <select class="form-control patient" name="select_patient" id="selectedPatient" style="width: 100%;" required>
                       <option selected disabled value="">Select Patient</option>
                       <?php
                       if (isset($_GET['id'])) {
@@ -55,7 +55,7 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Select Doctor</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2 dentist" name="select_dentist" id="preferredDentist" style="width: 100%;" required>
+                    <select class="form-control dentist" name="select_dentist" id="preferredDentist" style="width: 100%;" required>
                       <option selected disabled value="">Select Dentist</option>
                       <?php
                       if (isset($_GET['id'])) {
@@ -80,23 +80,22 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Appontment Date</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2" name="scheddate" id="preferredDate" style="width: 100%;" required>
-                    </select>
+                    <input type="text" id="scheddate" name="scheddate" class="form-control" autocomplete="off" readonly>
                   </div>
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label>Appontment Time</label>
-                    <span class="text-danger">*</span>
-                    <select class="form-control select2" name="schedTime" id="preferredTime" style="width:100%;" required>
-                    </select>
+                    <div id="time-slots" class="row">
+                      <!-- Dynamic time slots will appear here -->
+                    </div>
+                    <input type="hidden" id="selected-time-slot" name="selected_time_slot">
                   </div>
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label>Service</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2" multiple="multiple" name="service[]" id="service" style="width: 100%;" required>
+                    <select class="form-control" multiple="multiple" name="service[]" id="service" style="width: 100%;" required>
                       <?php
                       $sql = "SELECT * FROM procedures ORDER BY procedures ASC";
                       $query_run = mysqli_query($conn, $sql);
@@ -133,6 +132,14 @@ include('../../config/dbconn.php');
                       <option style="color:#3c8dbc;" value="#3c8dbc"> Light Blue</option>
                       <option style="color:#f56954;" value="#f56954"> Red</option>
                     </select>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                      <input class="custom-control-input ck" type="checkbox" id="followUp" name="follow_up" value="1">
+                      <label for="followUp" class="custom-control-label">Yes, schedule a follow-up</label>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-12">
@@ -187,14 +194,13 @@ include('../../config/dbconn.php');
             </button>
           </div>
 
-          <form action="appointment_action.php" method="POST">
+          <form action="appointment_action.php" id="edit-appointment" method="POST">
             <div class="modal-body">
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
                     <input type="hidden" name="edit_id" id="edit_id">
                     <input type="hidden" name="select_patient" id="edit_patient_id">
-                    <input type="hidden" name="select_dentist" id="edit_dentist_id">
                     <input type="hidden" id="edit_schedule">
                     <label>Select Patient</label>
                     <span class="text-danger">*</span>
@@ -222,7 +228,7 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Select Doctor</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2 dentist" name="" id="edit_dentist" style="width:100%;" required disabled>
+                    <select class="form-control select2 dentist" name="doc_id" id="preferredDentistEdit" style="width:100%;" required>
                       <?php
                       if (isset($_GET['id'])) {
                         echo $id = $_GET['id'];
@@ -244,18 +250,17 @@ include('../../config/dbconn.php');
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label>Appontment Date</label>
+                    <label for="scheddateEdit">Appointment Date</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2" name="scheddate" id="edit_sched" style="width:100%;" required>
-                    </select>
+                    <input type="text" id="scheddateEdit" name="scheddate" class="form-control" autocomplete="off" readonly required>
                   </div>
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label>Appontment Time</label>
-                    <span class="text-danger">*</span>
-                    <select class="form-control select2" name="schedTime" id="edit_schedTime" style="width:100%;" required>
-                    </select>
+                    <div id="time-slotsEdit" class="row">
+                      <!-- Dynamic time slots will appear here -->
+                    </div>
+                    <input type="hidden" id="selected-time-slotEdit" name="selected_time_slot">
                   </div>
                 </div>
                 <div class="col-sm-12">
@@ -302,6 +307,14 @@ include('../../config/dbconn.php');
                       <option style="color:#3c8dbc;" value="#3c8dbc"> Light Blue</option>
                       <option style="color:#f56954;" value="#f56954"> Red</option>
                     </select>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                      <input class="custom-control-input ck" type="checkbox" id="editFollowUp" name="follow_up">
+                      <label for="editFollowUp" class="custom-control-label">Yes, schedule a follow-up</label>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-12">

@@ -218,16 +218,16 @@ function initializeDatepickerAndPreventInput(selector) {
   });
 }
 
-function initializeSummernote(textareaId) {
-  $(textareaId).summernote({
-      height: 150
+function initializeDatetimePicker(selector) {
+  $(selector).datetimepicker({
+    format: 'LT'
   });
 }
 
-function initializeDatepicker(inputId) {
-  $(inputId).datepicker({
-      todayHighlight: true,
-      clearBtn: true
+
+function initializeSummernote(textareaId) {
+  $(textareaId).summernote({
+      height: 150
   });
 }
 
@@ -238,3 +238,33 @@ function initializeSelect2(selector,placeholder) {
       allowClear: true              
   });
 }
+
+function initializeCalendarDate(selector) {
+  $(selector).datepicker({
+      autoclose: true,
+      startDate: new Date(),
+  });
+}
+
+function handleTimeSlotClick(className, inputId, dataAttribute) {
+  $(document).on("click", className, function () {
+    $(className).removeClass("active");
+    $(this).addClass("active");
+
+    $(inputId).val($(this).data(dataAttribute));
+  });
+}
+
+function validateFormSubmission(formId, selectedTimeSlotSelector) {
+  document.querySelector(formId).addEventListener("submit", function (event) {
+    const selectedTimeSlot = document.querySelector(selectedTimeSlotSelector).value;
+
+    if (!selectedTimeSlot) {
+      event.preventDefault(); // Prevent form submission
+      alert("Please select a time slot before submitting the form.");
+    }
+  });
+}
+
+
+

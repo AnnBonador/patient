@@ -27,8 +27,8 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Select Doctor</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2 dentist" name="select_dentist" style="width: 100%;" required>
-                      <option selected disabled value="">Select Doctor</option>
+                    <select class="form-control dentist" name="select_dentist" id="preferredDentist" style="width: 100%;" required>
+                      <option selected disabled value="">Select Dentist</option>
                       <?php
                       if (isset($_GET['id'])) {
                         echo $id = $_GET['id'];
@@ -41,12 +41,8 @@ include('../../config/dbconn.php');
 
                           <option value="<?php echo $row['id']; ?>">
                             <?php echo $row['name']; ?></option>
-                        <?php
-                        }
-                      } else {
-                        ?>
-                        <option value="">No Record Found"</option>
                       <?php
+                        }
                       }
                       ?>
                     </select>
@@ -54,11 +50,38 @@ include('../../config/dbconn.php');
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label>Day</label>
-                    <span class="text-danger">*</span>
-                    <input type="date" name="select_day" id="select_day_sched" class="form-control" required>
+                    <label for="days">Select Days:</label>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="monday" name="days[]" value="Monday">
+                      <label class="form-check-label" for="monday">Monday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="tuesday" name="days[]" value="Tuesday">
+                      <label class="form-check-label" for="tuesday">Tuesday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="wednesday" name="days[]" value="Wednesday">
+                      <label class="form-check-label" for="wednesday">Wednesday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="thursday" name="days[]" value="Thursday">
+                      <label class="form-check-label" for="thursday">Thursday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="friday" name="days[]" value="Friday">
+                      <label class="form-check-label" for="friday">Friday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="saturday" name="days[]" value="Saturday">
+                      <label class="form-check-label" for="saturday">Saturday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="sunday" name="days[]" value="Sunday">
+                      <label class="form-check-label" for="sunday">Sunday</label>
+                    </div>
                   </div>
                 </div>
+
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label>Appointment Start Time</label>
@@ -87,7 +110,7 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Appointment Duration</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control" name="select_duration" required>
+                    <select class="form-control duration" name="select_duration" required>
                       <option value="15">15 minutes</option>
                       <option value="20">20 minutes</option>
                       <option value="30">30 minutes</option>
@@ -157,9 +180,35 @@ include('../../config/dbconn.php');
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label>Day</label>
-                    <span class="text-danger">*</span>
-                    <input type="date" name="select_day" id="edit_day" class="form-control" required readonly>
+                    <label for="days">Select Days:</label>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="monday" name="days[]" value="Monday">
+                      <label class="form-check-label" for="monday">Monday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="tuesday" name="days[]" value="Tuesday">
+                      <label class="form-check-label" for="tuesday">Tuesday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="wednesday" name="days[]" value="Wednesday">
+                      <label class="form-check-label" for="wednesday">Wednesday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="thursday" name="days[]" value="Thursday">
+                      <label class="form-check-label" for="thursday">Thursday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="friday" name="days[]" value="Friday">
+                      <label class="form-check-label" for="friday">Friday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="saturday" name="days[]" value="Saturday">
+                      <label class="form-check-label" for="saturday">Saturday</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="sunday" name="days[]" value="Sunday">
+                      <label class="form-check-label" for="sunday">Sunday</label>
+                    </div>
                   </div>
                 </div>
                 <div class="col-sm-6">
@@ -372,13 +421,6 @@ include('../../config/dbconn.php');
           },
           {
             "data": "day",
-            render: function(data, type, row) {
-
-              // var options = { year: 'numeric', month: 'short', day: 'numeric' };
-              // var date  = new Date(data);
-              return moment(data).format("DD-MMM-YYYY")
-              // return  date.toLocaleDateString("en-US", options)
-            }
           },
           {
             "data": "starttime"
@@ -427,20 +469,31 @@ include('../../config/dbconn.php');
       let timeFrom = $('input[name=start_time]').val(),
         timeTo = $('input[name=end_time]').val();
 
+      // Check if any checkbox is selected
+      const isDaySelected = $('input[name="days[]"]:checked').length > 0;
+
+      if (!isDaySelected) {
+        alert('Please select at least one day.');
+        return false; // Prevent form submission
+      }
+
       if (!timeFrom || !timeTo) {
         alert('Select time');
-        return
+        return false; // Prevent form submission
       }
+
       timeFrom = moment(timeFrom, 'hh:mm a');
       timeTo = moment(timeTo, 'hh:mm a');
 
       if (getTime(timeFrom) >= getTime(timeTo)) {
-        alert('Start time must not greater than or equal to End time');
-        return false;
-      } else {
-        return true;
+        alert('Start time must not be greater than or equal to End time');
+        return false; // Prevent form submission
       }
+
+      return true; // Allow form submission
     });
+
+
     $('.submit1').on('click', () => {
       let timeFrom = $('#edit_stime').find("input").val(),
         timeTo = $('#edit_etime').find("input").val();
@@ -473,33 +526,16 @@ include('../../config/dbconn.php');
     }
 
     today = yyyy + '-' + mm + '-' + dd;
-    document.getElementById("select_day_sched").setAttribute("min", today);
+
     $(document).ready(function() {
 
-      $(".dentist").select2({
-        placeholder: "Select Dentist",
-        allowClear: true
-      });
+      initializeSelect2(".dentist", "Select Dentist");
+      initializeSelect2(".duration", "Select Duration");
 
-      var starttime = document.getElementById('starttime');
-      var endtime = document.getElementById('endtime');
-
-      $('#scheddate').datepicker({
-        startDate: new Date()
-      });
-
-      $(starttime).datetimepicker({
-        format: 'LT'
-      });
-      $(endtime).datetimepicker({
-        format: 'LT'
-      });
-      $('#edit_stime').datetimepicker({
-        format: 'LT'
-      });
-      $('#edit_etime').datetimepicker({
-        format: 'LT'
-      });
+      initializeDatetimePicker('#starttime');
+      initializeDatetimePicker('#endtime');
+      initializeDatetimePicker('#edit_stime');
+      initializeDatetimePicker('#edit_etime');
 
       $(document).on('click', '.viewbtn', function() {
         var userid = $(this).data('id');
@@ -531,12 +567,13 @@ include('../../config/dbconn.php');
           success: function(response) {
             $.each(response, function(key, value) {
               $('#edit_id').val(value['id']);
-              $('#edit_dentist').val(value['doc_id']);
-              $('#edit_dentist').select2().trigger('change');
+              $('#edit_dentist').val(value['doc_id']).trigger('change');
               $("#edit_dentist").select2({
                 disabled: 'readonly'
               });
-              $('#edit_day').val(value['day']);
+
+              populateDaysForEdit(value['day']);
+
               $('#edit_stime').find("input").val(value['starttime']);
               $("#edit_etime").find("input").val(value['endtime']);
               $('#edit_duration').val(value['duration']);
@@ -555,5 +592,14 @@ include('../../config/dbconn.php');
       });
 
     });
+
+    function populateDaysForEdit(selectedDays) {
+      days = JSON.parse(selectedDays);
+      $('input[name="days[]"]').prop('checked', false);
+
+      days.forEach(day => {
+        $(`input[name="days[]"][value="${day}"]`).prop('checked', true);
+      });
+    }
   </script>
   <?php include('../../includes/footer.php'); ?>

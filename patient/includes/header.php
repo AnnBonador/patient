@@ -46,6 +46,7 @@ include('globals/superglobal.php');
   <!-- select2-bootstrap4-theme -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css">
   <!-- Custom style -->
+  <link rel="stylesheet" href="../admin/assets/css/index.css">
 </head>
 <style>
   .sidebar-dark-red {

@@ -27,7 +27,7 @@ include('payment_config.php');
 
             <div class="content">
                 <div class="container-fluid">
-                    <form action="request_action.php" method="post">
+                    <form action="request_action.php" id="create-appointment" method="post">
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="card">
@@ -39,17 +39,13 @@ include('payment_config.php');
                                                 <span class="text-primary">Paypal</span>. You can only refund your appointment fee in our clinic. This feature is to protect the site from spammer.
                                             </p>
                                         </div>
-                                        <p class="text-justify text-muted">Due to COVID-19 pandemic we are strictly by appointment only until further notice.
-                                            Please do not schedule an appointment if you have signs or symptoms of COVID-19.
-                                            Wearing a face mask is a must to ensure the safety of Doctors and Patients.We will confirm your appointment via email or call 2 to 3 days before your appointment date.
-                                        </p>
                                         <p class="text-justify text-muted">This questionnaire is designed with your safety in mind and must be answered honestly. Your answers will be reviewed prior to your appointment and a member of our team will contact you if we recommend rescheduling to a later date. An answer of YES does not exclude you from treatment. Please answer YES or NO to each of the following questions. Thank you for your consideration and understanding.</p>
                                         <input type="hidden" name="userid" value="<?php echo $_SESSION['auth_user']['user_id']; ?>">
                                         <div class="row col-12">
                                             <div class="form-group col-md-4">
                                                 <label>Preferred Dentist</label>
                                                 <span class="text-danger">*</span>
-                                                <select class="form-control select2 dentist" name="preferredDentist" id="preferredDentist" style="width: 100%;" required>
+                                                <select class="form-control dentist" name="preferredDentist" id="preferredDentist" style="width: 100%;" required>
                                                     <option selected disabled value="">Preferred Doctor</option>
                                                     <?php
                                                     if (isset($_GET['id'])) {
@@ -71,21 +67,19 @@ include('payment_config.php');
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label>Available Date</label><span class="text-danger">*</span>
-                                                <select class="form-control select2" name="preferredDate" id="preferredDate" style="width: 100%;" required>
-                                                    <option selected disabled value="">Preferred Date</option>
-                                                </select>
+                                                <input type="text" id="scheddate" name="scheddate" class="form-control" autocomplete="off" readonly>
                                             </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Available Time</label><span class="text-danger">*</span>
-                                                <select class="form-control select2" name="preferredTime" id="preferredTime" style="width: 100%;" required>
-                                                    <option selected disabled value="">Preferred Time</option>
-                                                </select>
+                                            <div class="form-group col-md-12">
+                                                <div id="time-slots" class="row">
+                                                    <!-- Dynamic time slots will appear here -->
+                                                </div>
+                                                <input type="hidden" id="selected-time-slot" name="selected_time_slot">
                                             </div>
                                         </div>
 
                                         <div class="col-12 form-group">
                                             <label>Service</label><span class="text-danger">*</span>
-                                            <select class="select2" multiple="multiple" name="service[]" id="service" data-placeholder="Services" style="width: 100%;" required>
+                                            <select class="form-control" multiple="multiple" name="service[]" id="service" data-placeholder="Services" style="width: 100%;" required>
                                                 <?php
                                                 $sql = "SELECT * FROM procedures ORDER BY procedures ASC";
                                                 $query_run = mysqli_query($conn, $sql);
@@ -150,109 +144,89 @@ include('payment_config.php');
         <?php include('includes/scripts.php'); ?>
         <script>
             $(document).ready(function() {
-                // $('#checkBtn').click(function() {
-                //     checked = $("input[type=checkbox]:checked").length;
+                initializeSelect2(".dentist", "Select Dentist");
+                initializeSelect2("#service", "Select Service");
+                initializeCalendarDate("#scheddate");
 
-                //     if(!checked) {
-                //         alert("Please, check at least one concern");
-                //         return false;
-                //     }
-                // });
-                $('.select2').select2();
-                $(".dentist").select2({
-                    placeholder: "Select Dentist",
-                    allowClear: true
-                });
-                $("#preferredDate").select2({
-                    placeholder: "Available Date",
-                    allowClear: true
-                });
-                $("#service").select2({
-                    placeholder: "Services",
-                    allowClear: true
-                });
-                $("#preferredTime").select2({
-                    placeholder: "Available Time",
-                    allowClear: true
-                });
-                $("#preferredDentist").on("change", function() {
-                    var selectedDentistId = $("#preferredDentist").val();
-                    $('#preferredDate').val('');
-                    $('#preferredTime').val(null).trigger('change');
-                    $('#preferredDate').select2({
-                        allowClear: true,
-                        placeholder: "Available Date",
-                        ajax: {
-                            url: 'request_action.php',
-                            type: 'GET',
-                            dataType: 'json',
-                            delay: 250,
-                            data: function(params) {
-                                return {
-                                    doctorIdDate: selectedDentistId,
-                                    patientId: <?php echo $_SESSION['auth_user']['user_id']; ?>
-                                };
-                            },
-                            processResults: function(response) {
-                                return {
-                                    results: response
-                                };
-                            },
-                            cache: true,
-                        }
-                    }).on('change', function(e) {
-                        $("#service").val(null).trigger("change");
-                        var data = $(this).select2('data')[0] ?? '';
-                        var infoValue = data.info ?? '';
-                        console.log(infoValue);
+                handleTimeSlotClick(".time-slot", "#selected-time-slot", "slot");
 
-                        var select2Config = {
-                            allowClear: true,
-                            placeholder: "Select Service"
-                        };
+                validateFormSubmission("#create-appointment", "#selected-time-slot");
 
-                        if (infoValue == 30) {
-                            select2Config.minimumResultsForSearch = Infinity;
-                            select2Config.maximumSelectionLength = 1;
-                        } else if (infoValue == 60) {
-                            select2Config.minimumResultsForSearch = Infinity;
-                            select2Config.maximumSelectionLength = 2;
-                        } else if (infoValue == 120) {
-                            select2Config.minimumResultsForSearch = Infinity;
-                            select2Config.maximumSelectionLength = 4;
-                        } else if (infoValue == 180) {
-                            select2Config.minimumResultsForSearch = Infinity;
-                            select2Config.maximumSelectionLength = 6;
-                        }
+                $("#preferredDentist").change(function() {
+                    const selectedDoctorId = $(this).val();
 
-                        // Update select2 configuration options for service select box
-                        $('#service').select2('destroy').select2(select2Config);
+                    $("#scheddate").val("");
+                    $("#time-slots").empty();
+                    $("#scheddate").off("changeDate");
+                    $("#scheddate").datepicker("destroy").datepicker({
+                        autoclose: true,
+                        startDate: new Date(),
                     });
-                });
-                $("#preferredDate").on("change", function() {
-                    var selectedSchedId = $("#preferredDate").val();
-                    $('#preferredTime').val('');
-                    $('#preferredTime').select2({
-                        allowClear: true,
-                        placeholder: "Available Date",
-                        ajax: {
-                            url: 'request_action.php',
-                            type: 'POST',
-                            dataType: 'json',
-                            delay: 250,
-                            data: function(params) {
-                                return {
-                                    selectedDateId: selectedSchedId,
-                                };
+
+                    if (selectedDoctorId) {
+                        $.ajax({
+                            url: "request_action.php",
+                            type: "GET",
+                            data: {
+                                dentist: true,
+                                doctor_id: selectedDoctorId,
                             },
-                            processResults: function(response) {
-                                return {
-                                    results: response
-                                };
+                            dataType: "json",
+                            success: function(doctor) {
+                                // Check if there is an error in the response
+                                if (doctor.error) {
+                                    // Display a custom error message
+                                    const errorMessage =
+                                        "Sorry, the schedule for the selected doctor is not available. Please choose another doctor or try again later.";
+                                    $("#time-slots").html(`<div class="col-12 text-danger">${errorMessage}</div>`);
+                                    return; // Exit the function to prevent further execution
+                                }
+
+                                const availableDays = doctor.available_days;
+                                const disabledDays = [0, 1, 2, 3, 4, 5, 6].filter(
+                                    (day) => !availableDays.includes(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day])
+                                );
+
+                                $("#scheddate").datepicker("setDaysOfWeekDisabled", disabledDays);
+
+                                $("#scheddate").on("changeDate", function(e) {
+                                    const selectedDate = e.format();
+
+                                    $.ajax({
+                                        url: "request_action.php",
+                                        type: "GET",
+                                        data: {
+                                            timeslots: true,
+                                            doctor_id: selectedDoctorId,
+                                            date: selectedDate,
+                                        },
+                                        dataType: "json",
+                                        success: function(response) {
+                                            // Check if available_time_slots is an empty array
+                                            if (response.available_time_slots && response.available_time_slots.length > 0) {
+                                                let slotsHtml = '<div class="col-12"><h5>Available Time Slots:</h5></div>';
+                                                response.available_time_slots.forEach((slot) => {
+                                                    slotsHtml += ` <button type="button" class="col-md-2 btn btn-outline-primary time-slot" data-slot="${slot}">${slot}</button>`;
+                                                });
+                                                $("#time-slots").html(slotsHtml);
+                                            } else {
+                                                // Display the custom message for no available time slots
+                                                const noSlotsMessage =
+                                                    "Sorry, the time slot for the selected doctor is not available. Please choose another doctor or try again later.";
+                                                $("#time-slots").html(`<div class="col-12 text-danger">${noSlotsMessage}</div>`);
+                                            }
+                                        },
+                                        error: function(error) {
+                                            console.log("Error fetching time slots:", error);
+                                        },
+                                    });
+                                });
                             },
-                            cache: true,
-                        }
-                    });
+                            error: function(error) {
+                                console.log("Error fetching doctor schedule:", error);
+                            },
+                        });
+                    }
                 });
             });
         </script>
