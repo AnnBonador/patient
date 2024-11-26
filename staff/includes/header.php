@@ -21,8 +21,10 @@ include('globals/superglobal.php');
   <link rel="stylesheet" href="../admin/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
   <!-- Tempusdominus Bootstrap 4 -->
   <link rel="stylesheet" href="../admin/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- Select2 -->
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- <link rel="stylesheet" href="../admin/assets/plugins/select2/css/select2.min.css" /> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css">
+  <!-- select2-bootstrap4-theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css">
   <!-- Bootstrap4 Duallistbox -->
   <link rel="stylesheet" href="../admin/assets/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
   <!-- BS Stepper -->
@@ -33,8 +35,6 @@ include('globals/superglobal.php');
   <link rel="stylesheet" href="../admin/assets/dist/css/adminlte.min.css">
   <!-- fullCalendar -->
   <link rel="stylesheet" href="../admin/assets/plugins/fullcalendar/main.css">
-  <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="../admin/assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <!-- Date Picker -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet" />
   <!-- Toastr -->
@@ -54,4 +54,5 @@ include('globals/superglobal.php');
   <!-- JQVMap -->
   <link rel="stylesheet" href="../admin/assets/plugins/jqvmap/jqvmap.min.css">
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="../admin/assets/css/index.css">
 </head>

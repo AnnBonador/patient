@@ -231,6 +231,15 @@ function initializeSummernote(textareaId) {
   });
 }
 
+function initializeMaxSelect2(selector,placeholder) {
+  $(selector).select2({
+      theme: "bootstrap4",           
+      placeholder: placeholder,
+      allowClear: true        ,    
+      maximumSelectionLength: 2  
+  });
+}
+
 function initializeSelect2(selector,placeholder) {
   $(selector).select2({
       theme: "bootstrap4",           

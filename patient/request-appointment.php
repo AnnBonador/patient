@@ -79,7 +79,7 @@ include('payment_config.php');
 
                                         <div class="col-12 form-group">
                                             <label>Service</label><span class="text-danger">*</span>
-                                            <select class="form-control" multiple="multiple" name="service[]" id="service" data-placeholder="Services" style="width: 100%;" required>
+                                            <select class="form-control" multiple="multiple" name="service[]" id="service" style="width: 100%;" required>
                                                 <?php
                                                 $sql = "SELECT * FROM procedures ORDER BY procedures ASC";
                                                 $query_run = mysqli_query($conn, $sql);
@@ -145,12 +145,15 @@ include('payment_config.php');
         <script>
             $(document).ready(function() {
                 initializeSelect2(".dentist", "Select Dentist");
-                initializeSelect2("#service", "Select Service");
+                initializeMaxSelect2("#service", "Select Service");
+
                 initializeCalendarDate("#scheddate");
 
                 handleTimeSlotClick(".time-slot", "#selected-time-slot", "slot");
 
                 validateFormSubmission("#create-appointment", "#selected-time-slot");
+
+              
 
                 $("#preferredDentist").change(function() {
                     const selectedDoctorId = $(this).val();

@@ -228,7 +228,7 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Select Doctor</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2 dentist" name="doc_id" id="preferredDentistEdit" style="width:100%;" required>
+                    <select class="form-control dentist" name="doc_id" id="preferredDentistEdit" style="width:100%;" required>
                       <?php
                       if (isset($_GET['id'])) {
                         echo $id = $_GET['id'];

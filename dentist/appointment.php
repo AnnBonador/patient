@@ -76,7 +76,7 @@ include('../admin/config/dbconn.php');
                   <div class="form-group">
                     <label>Service</label>
                     <span class="text-danger">*</span>
-                    <select class="select2" multiple="multiple" name="service[]" id="edit_reason" style="width: 100%;" required>
+                    <select multiple="multiple" name="service[]" id="edit_reason" style="width: 100%;" required>
                       <?php
                       $sql = "SELECT * FROM procedures ORDER BY procedures ASC";
                       $query_run = mysqli_query($conn, $sql);

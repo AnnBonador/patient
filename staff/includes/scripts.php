@@ -39,7 +39,7 @@
 <!-- Datetimepicker -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
 <!-- Select2 -->
-<script src="../admin/assets/plugins/select2/js/select2.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <!-- fullCalendar 2.2.5 -->
 <script src="../admin/assets/plugins/moment/moment.min.js"></script>
 <script src="../admin/assets/plugins/fullcalendar/main.js"></script>
@@ -47,11 +47,14 @@
 <script src="../admin/assets/dist/js/adminlte.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="../admin/assets/dist/js/demo.js"></script>
+<script src="../admin/assets/dist/js/date.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="../admin/assets/dist/js/pages/dashboard.js"></script>
 <!-- Summernote -->
 <script src="../admin/assets/plugins/summernote/summernote-bs4.min.js"></script>
 <script src="../admin/assets/plugins/inputmask/jquery.inputmask.bundle.min.js"></script>
+<script src="../admin/assets/dist/js/countrystatecity.js"></script>
+<script src="../admin/assets/dist/js/custom.js"></script>
 <script>
     $.widget.bridge('uibutton', $.ui.button)
 </script>
@@ -171,34 +174,6 @@
                 return 'Strong'
             }
         }
-
-        function load_unseen_notification(view = '') {
-            $.ajax({
-                url: "fetch_notification.php",
-                method: "POST",
-                data: {
-                    view: view
-                },
-                dataType: "json",
-                success: function(data) {
-                    $('.dropdown-notif').html(data.notification);
-                    if (data.unseen_notification > 0) {
-                        $('.count').html(data.unseen_notification);
-                    }
-                }
-            });
-        }
-
-        load_unseen_notification();
-
-        $(document).on('click', '.notification', function() {
-            $('.count').html('');
-            load_unseen_notification('yes');
-        });
-
-        setInterval(function() {
-            load_unseen_notification();;
-        }, 5000);
 
     });
 </script>
