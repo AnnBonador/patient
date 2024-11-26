@@ -222,7 +222,7 @@ include('includes/sidebar.php');
                                        ?>
                                           <tr>
                                              <td><?php echo date('F j, Y', strtotime($row['schedule'])); ?></td>
-                                             <td><?php echo $row['starttime'] . ' - ' . $row['endtime']; ?></td>
+                                             <td><?php echo $row['starttime']; ?></td>
                                              <td><?php echo $row['dname']; ?></td>
                                              <td><span class="badge badge-primary"><?php echo $row['payment_option']; ?></span></td>
                                              <td>

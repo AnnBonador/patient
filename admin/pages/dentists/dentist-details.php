@@ -123,7 +123,7 @@ include('../../config/dbconn.php');
                                                                         <tr>
                                                                             <td><?= $user['pname'] ?></td>
                                                                             <td><?= date('d-M-Y', strtotime($user['schedule'])) ?></td>
-                                                                            <td><?= $user['starttime'] . ' - ' . $user['endtime'] ?></td>
+                                                                            <td><?= $user['starttime'] ?></td>
                                                                             <td>
                                                                                 <?php
                                                                                 if ($user['status'] == 'Treated') {

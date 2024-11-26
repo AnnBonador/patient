@@ -190,14 +190,14 @@ include('../../config/dbconn.php');
                     <tbody>
                       <?php
                       $i = 1;
-                      $sql = "SELECT CONCAT(p.lname,', ',p.fname) as pname,t.visit,t.teeth,t.treatment,t.file_name,t.complaint,t.fees,t.remarks,t.id,s.day FROM treatment t INNER JOIN tblpatient p ON t.patient_id = p.id INNER JOIN schedule s ON s.id=t.visit ORDER BY t.id DESC";
+                      $sql = "SELECT CONCAT(p.lname,', ',p.fname) as pname,t.visit,t.teeth,t.treatment,t.file_name,t.complaint,t.fees,t.remarks,t.id FROM treatment t INNER JOIN tblpatient p ON t.patient_id = p.id ORDER BY t.id DESC";
                       $query_run = mysqli_query($conn, $sql);
                       if (mysqli_num_rows($query_run) > 0) {
                         foreach ($query_run as $row) {
                       ?>
                           <tr>
                             <td><?= $row['pname']; ?></td>
-                            <td><?= date('d-M-Y', strtotime($row['day'])); ?></td>
+                            <td><?= $row['visit']; ?></td>
                             <td><?= $row['teeth'] ?></td>
                             <td><?= $row['complaint'] ?></td>
                             <td><?= $row['fees'] ?></td>

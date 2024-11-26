@@ -153,10 +153,9 @@ include('../../config/dbconn.php');
 
         var date = new Date()
         var d = date.getDate(),
-          m = date.getMonth(),
-          y = date.getFullYear()
+        m = date.getMonth(),
+        y = date.getFullYear()
         var scheds = $.parseJSON('<?php echo ($sched_arr) ?>');
-
         var Calendar = FullCalendar.Calendar;
         var Draggable = FullCalendar.Draggable;
 
@@ -184,6 +183,7 @@ include('../../config/dbconn.php');
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
           },
 
+  
           events: function(event, successCallback) {
             var events = []
             Object.keys(scheds).map(k => {
