@@ -5,7 +5,11 @@
     if(isset($_POST['insert_schedule']))
     {
         $doc_id = $_POST['select_dentist'];
-        $day = $_POST['select_day'];
+
+        $days = $_POST['days'];
+        $daysArray = array_map('ucfirst', $days);
+        $dayJson = json_encode($daysArray);
+
         $s_time = $_POST['start_time'];
         $e_time = $_POST['end_time'];
         $duration = $_POST['select_duration'];
@@ -26,7 +30,7 @@
             $_SESSION['error'] = "The doctor selected already have a schedule on that day";
             header('Location:schedule.php');
         }else{
-            $sql = "INSERT INTO schedule (doc_id,doc_name,day,starttime,endtime,duration) VALUES ('$doc_id','$doc_name','$day','$s_time','$e_time','$duration')";
+            $sql = "INSERT INTO schedule (doc_id,doc_name,day,starttime,endtime,duration) VALUES ('$doc_id','$doc_name','$dayJson','$s_time','$e_time','$duration')";
             $query_run = mysqli_query($conn,$sql);
 
             if($query_run){

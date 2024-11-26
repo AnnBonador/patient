@@ -176,7 +176,9 @@ if (isset($_POST['update_appointment'])) {
   $subject = 'Confirmed your Appointment';
   $type = '1';
   $cancelled = 'Cancelled your Appointment';
+
   $send_email = $_POST['send-email'];
+
   $date_submitted = date('Y-m-d H:i:s');
 
   $sql = "UPDATE tblappointment set doc_id='$doctor_id',schedule='$schedule',starttime='$selectedTime', reason='$treatment',status='$status',bgcolor='$bgcolor',follow_up='$follow_up' WHERE id='$id' ";
@@ -232,7 +234,7 @@ if (isset($_POST['update_appointment'])) {
       cancelledEmail($patient_name, $patient_email, $patient_date, $patient_time, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name, $mobile);
     }
 
-    if (!empty($_POST['send-email'])) {
+    if (isset($send_email)) {
       $mpdf = new \Mpdf\Mpdf();
       $answer = array();
       $qanda = "SELECT h.answer,h.question_id,q.questions from health_declaration h INNER JOIN questionnaires q ON h.question_id = q.id WHERE h.patient_id = '$patient_id'";
