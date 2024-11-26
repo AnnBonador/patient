@@ -72,19 +72,21 @@ include('../../config/dbconn.php');
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Password</label>
-                    <span class="text-danger">*</span>
-                    <input type="password" id="password" name="password" class="form-control" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters and one special character" required>
+              <div class="row mb-3">
+                <div class="input-group col-sm-6">
+                  <input type="password" class="form-control" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}" title="Must contain at least one number and one uppercase and lowercase letter,at least one special character, and at least 8 or more characters" placeholder="Password">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <i class="fas fa-eye" id="eye"></i>
+                    </div>
                   </div>
                 </div>
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Confirm Password</label>
-                    <span class="text-danger">*</span>
-                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                <div class="input-group col-sm-6">
+                  <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <i class="fas fa-eye" id="cf-eye"></i>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -417,7 +419,7 @@ include('../../config/dbconn.php');
 
       initializeDatepickerAndPreventInput('#birthday');
       initializeDatepickerAndPreventInput('#edit_dob');
-      
+
       $(document).on('click', '.viewStaffbtn', function() {
         var userid = $(this).data('id');
 

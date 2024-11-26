@@ -75,7 +75,6 @@ $(document).ready(function () {
         },
       },
       { data: "starttime" },
-      { data: "endtime" },
       { data: "payment_option"},
       {
         data: "status",
@@ -200,7 +199,6 @@ $(document).ready(function () {
         },
       },
       { data: "starttime" },
-      { data: "endtime" },
       { data: "payment_option" },
       {
         data: "status",
@@ -307,7 +305,6 @@ $(document).ready(function () {
         },
       },
       { data: "starttime" },
-      { data: "endtime" },
       { data: "payment_option" },
       {
         data: "status",
@@ -413,7 +410,6 @@ $(document).ready(function () {
         },
       },
       { data: "starttime" },
-      { data: "endtime" },
       { data: "payment_option" },
       {
         data: "status",
@@ -519,7 +515,6 @@ $(document).ready(function () {
         },
       },
       { data: "starttime" },
-      { data: "endtime" },
       { data: "payment_option" },
       {
         data: "status",
@@ -625,7 +620,6 @@ $(document).ready(function () {
         },
       },
       { data: "starttime" },
-      { data: "endtime" },
       { data: "payment_option" },
       {
         data: "status",

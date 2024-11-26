@@ -11,7 +11,6 @@ $table = <<<EOT
             a.created_at,
             a.schedule,
             a.starttime,
-            a.endtime,
             a.status,
             p.payment_status,
             a.id
@@ -28,7 +27,6 @@ $columns = array(
     array('db' => 'created_at',  'dt' => 'created_at'),
     array('db' => 'schedule',   'dt' => 'schedule'),
     array('db' => 'starttime',  'dt' => 'starttime'),
-    array('db' => 'endtime',   'dt' => 'endtime'),
     array('db' => 'status',   'dt' => 'status'),
     array('db' => 'payment_status',   'dt' => 'payment_status'),
     array('db' => 'id',   'dt' => 'id'),

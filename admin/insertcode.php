@@ -447,8 +447,7 @@ include('config/dbconn.php');
                                     <th class="text-center">#</th>
                                     <th>Patient</th>
                                     <th>Day</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
+                                    <th>Time</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                   </tr>
@@ -467,7 +466,6 @@ include('config/dbconn.php');
                                     <td><?php echo $row['pname'];?></td>
                                     <td><?php echo date('F j, Y',strtotime($row['schedule'])); ?></td>
                                     <td><?php echo date('h:i A',strtotime($row['starttime'])); ?></td>
-                                    <td><?php echo date('h:i A',strtotime($row['endtime'])); ?></td>
                                     <td><?php
                                     if($row['status'] == 'Confirmed')
                                     {
