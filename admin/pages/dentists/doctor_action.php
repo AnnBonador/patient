@@ -115,7 +115,7 @@ if (isset($_POST['updatedoctor'])) {
                 $update_filename = $old_image;
             }
             if ($_SESSION['error'] == '') {
-                $sql = "UPDATE tbldoctor set name='$fname',clinic_id='$clinic_id',address='$address',dob='$dob', gender='$gender', phone='$phone', email='$doc_email', degree='$doc_degree', specialty='$doc_specialty', password='$password', image='$update_filename' WHERE id='$id' ";
+                $sql = "UPDATE tbldoctor set name='$fname',address='$address',dob='$dob', gender='$gender', phone='$phone', email='$doc_email', degree='$doc_degree', specialty='$doc_specialty', password='$password', image='$update_filename' WHERE id='$id' ";
                 $query_run = mysqli_query($conn, $sql);
 
                 if ($query_run) {

@@ -34,7 +34,7 @@ if (isset($_POST['userid'])) {
                     </tr>
                     <tr>
                         <th class="text-muted">Time:</th>
-                        <td><?php echo date('h:i A', strtotime($row['starttime']))?></td>
+                        <td><?php echo date('h:i A', strtotime($row['starttime'])) ?></td>
                     </tr>
                     <tr>
                         <th class="text-muted">Reason:</th>
@@ -44,10 +44,16 @@ if (isset($_POST['userid'])) {
                         <th class="text-muted">Status:</th>
                         <td>
                             <?php
-                            if ($row['status'] == 'Confirmed') {
-                                echo $row['status'] = '<span class="badge badge-success">Confirmed</span>';
+                            switch ($row['status']) {
+                                case 'Confirmed':
+                                    echo '<span class="badge badge-success">Confirmed</span>';
+                                    break;
+                                case 'Reschedule':
+                                    echo '<span class="badge badge-secondary">Reschedule</span>';
+                                    break;
                             }
                             ?>
+
                         </td>
                     </tr>
                 </tbody>

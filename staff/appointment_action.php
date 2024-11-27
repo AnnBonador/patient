@@ -13,6 +13,10 @@ use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
 
 require '../vendor/autoload.php';
+
+$current_date = date('Y-m-d H:i:s');
+$date_submission = date('l, F j, Y', strtotime($current_date));
+
 function sendTextMessage($patient_name, $patient_phone, $text)
 {
     include('../admin/config/dbconn.php');
@@ -114,14 +118,19 @@ function cancelledEmail($patient_name, $patient_email, $patient_date, $patient_t
 }
 
 if (isset($_POST['insert_appointment'])) {
+    
     $services = '';
     $patient_id = $_POST['select_patient'];
     $doctor_id = $_POST['select_dentist'];
-    $schedule_id = $_POST['scheddate'];
-    $selectedTime = $_POST['schedTime'];
-    $preferredTime = explode("-", $selectedTime);
-    $s_time = $preferredTime[0];
-    $e_time = $preferredTime[1];
+
+    $scheddate = $_POST['scheddate'];
+    $date = DateTime::createFromFormat('m/d/Y', $scheddate);
+    $schedule = $date->format('Y-m-d');
+
+    $follow_up = $_POST['follow_up'];
+
+    $selectedTime = $_POST['selected_time_slot'];
+
     foreach ($_POST['service'] as $selectedService) {
         $services .= $selectedService . ",";
     }
@@ -132,6 +141,7 @@ if (isset($_POST['insert_appointment'])) {
     $date_submitted = date('Y-m-d H:i:s');
     $subject = 'Confirmed your Appointment';
     $type = '1';
+
     $send_email = $_POST['send-email'];
 
     $sql = "SELECT * FROM tblpatient WHERE id='$patient_id'";
@@ -142,16 +152,12 @@ if (isset($_POST['insert_appointment'])) {
         }
     }
 
-    $sql = "SELECT * FROM schedule WHERE id='$schedule_id'";
+    $sql = "SELECT id FROM schedule WHERE doc_id='$doctor_id'";
     $query_run = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($query_run) > 0) {
-        foreach ($query_run as $row) {
-            $schedule = $row['day'];
-        }
-    }
+    $schedule_id = mysqli_fetch_assoc($query_run)['id'];
 
-    $sql = "INSERT INTO tblappointment (patient_id,patient_name,doc_id,schedule,starttime,endtime,sched_id,reason,schedtype,status,bgcolor,created_at)
-        VALUES ('$patient_id','$patient_name','$doctor_id','$schedule','$s_time','$e_time','$schedule_id','$treatment','$schedtype','$status','$bgcolor','$date_submitted')";
+    $sql = "INSERT INTO tblappointment (patient_id,patient_name,doc_id,schedule,starttime,sched_id,reason,schedtype,status,bgcolor,follow_up,created_at)
+        VALUES ('$patient_id','$patient_name','$doctor_id','$schedule','$selectedTime','$schedule_id','$treatment','$schedtype','$status','$bgcolor','$follow_up','$date_submitted')";
     $query_run = mysqli_query($conn, $sql);
 
     $systemlogo = "SELECT * from system_details";
@@ -163,7 +169,6 @@ if (isset($_POST['insert_appointment'])) {
     $appdetails = mysqli_query($conn, $fulldata);
     $patient_data = mysqli_fetch_array($appdetails);
     $patient_name = $patient_data['pname'];
-    $date_submission = date('l, F j, Y', strtotime($patient_data['created_at']));
     $patient_email = $patient_data['email'];
     $patient_date = date('l, F j, Y', strtotime($patient_data['schedule']));
     $patient_phone = $patient_data['phone'];
@@ -177,7 +182,7 @@ if (isset($_POST['insert_appointment'])) {
             sendTextMessage($patient_name, $patient_phone, $text);
         }
 
-        if (!empty($_POST['send-email'])) {
+        if (isset($send_email)) {
             sendEmail($patient_name, $patient_email, $patient_date, $patient_time, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name);
         }
 
@@ -197,18 +202,18 @@ if (isset($_POST['checking_editbtn'])) {
 
     if (mysqli_num_rows($query_run) > 0) {
         foreach ($query_run as $row) {
-            $sched =  date('F d, Y', strtotime($row['schedule']));
-            $time = date('h:i A', strtotime($row['starttime'])) . "-" . date('h:i A', strtotime($row['endtime']));
+            $sched = DateTime::createFromFormat('Y-m-d', $row['schedule'])->format('m/d/Y');
             $result_array = array(
                 'id' => $row['id'],
                 'patient_id' => $row['patient_id'],
                 'doc_id' => $row['doc_id'],
                 'schedule' => $sched,
-                'time' => $time,
+                'starttime' => $row['starttime'],
                 'sched_id' => $row['sched_id'],
                 'reason' => $row['reason'],
                 'status' => $row['status'],
-                'bgcolor' => $row['bgcolor']
+                'bgcolor' => $row['bgcolor'],
+                'follow_up' => $row['follow_up']
             );
         }
         header('Content-type: application/json');
@@ -221,23 +226,24 @@ if (isset($_POST['update_appointment'])) {
 
     $patient_id = $_POST['select_patient'];
     $doctor_id = $_POST['select_dentist'];
-    $schedule_id = $_POST['scheddate'];
-    $selectedTime = $_POST['schedTime'];
-    $preferredTime = explode("-", $selectedTime);
-    $s_time = $preferredTime[0];
-    $e_time = $preferredTime[1];
+    
+    $scheddate = $_POST['scheddate'];
+    $date = DateTime::createFromFormat('m/d/Y', $scheddate);
+    $schedule = $date->format('Y-m-d');
+
+    $follow_up = isset($_POST['follow_up']) ? 1 : 0;
+
+    $selectedTime = $_POST['selected_time_slot'];
+
     foreach ($_POST['service'] as $selectedService) {
         $services .= $selectedService . ",";
     }
     $treatment = rtrim($services, ", ");
 
-    $sql = "SELECT * FROM schedule WHERE id='$schedule_id'";
+    $sql = "SELECT id FROM schedule WHERE doc_id='$doctor_id'";
     $query_run = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($query_run) > 0) {
-        foreach ($query_run as $row) {
-            $schedule = $row['day'];
-        }
-    }
+    $schedule_id = mysqli_fetch_assoc($query_run)['id'];
+
     $status = $_POST['status'];
     $bgcolor = $_POST['color'];
     $send_email = $_POST['send-email'];
@@ -246,7 +252,7 @@ if (isset($_POST['update_appointment'])) {
     $type = '1';
     $date_submitted = date('Y-m-d H:i:s');
 
-    $sql = "UPDATE tblappointment set reason='$treatment',status='$status',bgcolor='$bgcolor' WHERE id='$id' ";
+    $sql = "UPDATE tblappointment set doc_id='$doctor_id',schedule='$schedule',starttime='$selectedTime',reason='$treatment',status='$status',bgcolor='$bgcolor',follow_up='$follow_up' WHERE id='$id' ";
     $query_run = mysqli_query($conn, $sql);
 
     $systemlogo = "SELECT * from system_details";
@@ -258,7 +264,6 @@ if (isset($_POST['update_appointment'])) {
     $appdetails = mysqli_query($conn, $fulldata);
     $patient_data = mysqli_fetch_array($appdetails);
     $patient_name = $patient_data['pname'];
-    $date_submission = date('l, F j, Y', strtotime($patient_data['created_at']));
     $patient_email = $patient_data['email'];
     $patient_date = date('l, F j, Y', strtotime($patient_data['schedule']));
     $patient_phone = $patient_data['phone'];
@@ -275,7 +280,7 @@ if (isset($_POST['update_appointment'])) {
             sendTextMessage($patient_name, $patient_phone, $text);
             cancelledEmail($patient_name, $patient_email, $patient_date, $patient_time, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name, $mobile);
         }
-        if (!empty($_POST['send-email'])) {
+        if (isset($send_email)) {
             sendEmail($patient_name, $patient_email, $patient_date, $patient_time, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name);
         }
         $_SESSION['success'] = "Appointment Updated Successfully";
@@ -301,175 +306,89 @@ if (isset($_POST['deletedata'])) {
     }
 }
 
-if (isset($_GET['getDoctors'])) {
-    $pat_id = $_GET['getDoctors'];
-    $today = date("Y-m-d");
+if (isset($_GET['dentist'])) {
+    $doctor_id = $_GET['doctor_id'];
 
-    $data = array();
+    $sql = "SELECT * FROM schedule WHERE doc_id = $doctor_id";
+    $result = $conn->query($sql);
 
-    if ($pat_id != "") {
-        $sql = "SELECT * FROM tbldoctor WHERE status='1'";
-        $query_run = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($query_run) > 0) {
-            foreach ($query_run as $row) {
-                $id = $row['id'];
-                $doctor_name = $row['name'];
+    if ($result->num_rows > 0) {
 
-                $data[] = array('id' => $id, 'text' => $doctor_name);
-            }
-        }
-    }
+        $schedule = $result->fetch_assoc();
+        $doctor_schedule = [
+            'available_days' => json_decode($schedule['day']),
+        ];
 
-    echo json_encode($data);
-}
-
-if (isset($_GET['doctorIdDate'])) {
-    $doc_id = $_GET['doctorIdDate'];
-    $pat_id = $_GET['patientId'];
-    $today = date("Y-m-d");
-
-    $data = array();
-
-    $sql = "SELECT * FROM schedule WHERE doc_id='$doc_id' AND day > CURDATE()";
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $day = date('F d, Y', strtotime($row['day']));
-            $startTime = strtotime($row['starttime']);
-            $endTime = strtotime($row['endtime']);
-            $duration = $row['duration'];
-
-            $minuteDiff = round(abs($endTime - $startTime) / 60, 2);
-
-            $getApptSql = "SELECT count(*) as numberOfappt FROM tblappointment WHERE doc_id='$doc_id' AND schedule='$day'";
-            $getApptRes = mysqli_query($conn, $getApptSql);
-            $getApptRow = mysqli_fetch_assoc($getApptRes);
-            $numberOfAppt =  $getApptRow['numberOfappt'];
-
-            if ($duration <= ($minuteDiff - ($numberOfAppt * 60))) {
-                $chkApptSql = "SELECT count(*) as appt FROM tblappointment WHERE patient_id='$pat_id' AND schedule='$day' AND status!='Cancelled'";
-                $chkApptRes = mysqli_query($conn, $chkApptSql);
-                $chkApptRow = mysqli_fetch_assoc($chkApptRes);
-                $appt =  $chkApptRow['appt'];
-                if ($appt == 0) {
-                    $data[] = array('id' => $id, 'text' => $day);
-                }
-            }
-        }
+        header('Content-Type: application/json');
+        echo json_encode($doctor_schedule);
     } else {
-        $data[] = array('id' => 0, 'text' => 'No dates found', 'disabled' => true);
+        echo json_encode(['error' => 'Schedule not found for the selected doctor.']);
     }
-
-    echo json_encode($data);
 }
 
-if (isset($_POST['selectedDateId'])) {
-    $schedId = $_POST['selectedDateId'];
-    $today = date("Y-m-d");
-    $conflict = 0;
-    $previousEndTime = '';
-    $lunchbreak = false;
+if (isset($_GET['timeslots'])) {
+    $doctor_id = $_GET['doctor_id'];
 
-    $data = array();
+    $date = $_GET['date'];
+    $dateTime = DateTime::createFromFormat('m/d/Y', $date);
+    $selected_date = $dateTime->format('Y-m-d');
 
-    $sql = "SELECT * FROM schedule WHERE id='$schedId'";
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $day = date('F d, Y', strtotime($row['day']));
-            $startTime = $row['starttime'];
-            $endTime = $row['endtime'];
-            $duration = $row['duration'];
+    // Fetch the doctor's schedule from the database
+    $sql = "SELECT * FROM schedule WHERE doc_id = $doctor_id";
+    $result = $conn->query($sql);
 
-            $totalNoOfMins = round(abs(strtotime($endTime) - strtotime($startTime)) / 60, 2);
+    if ($result->num_rows > 0) {
+        // Fetch schedule data
+        $schedule = $result->fetch_assoc();
+        $doctor_schedule = [
+            'doctor_id' => $schedule['doc_id'],
+            'doctor_name' => $schedule['doc_name'],
+            'available_days' => json_decode($schedule['day']),
+            'start_time' => $schedule['starttime'],
+            'end_time' => $schedule['endtime'],
+            'duration' => $schedule['duration']
+        ];
 
-            $noOfAppt = ($totalNoOfMins - 60) / $duration;
-
-            $currentStartTime = date('h:i A', strtotime($startTime));
-            $currentEndTime = date('h:i A', strtotime($startTime . " " . $duration . " minutes"));
-
-            do {
-                $timeSched = $currentStartTime . "-" . $currentEndTime;
-                if (date('H', strtotime($currentStartTime)) != 12) {
-                    $data[] = array('id' => $timeSched, 'text' => $timeSched);
-                }
-
-                if (date('H', strtotime($currentEndTime)) == 12 && $lunchbreak == false) {
-                    $currentStartTime = date('h:i A', strtotime($currentEndTime));
-                    $currentEndTime = date('h:i A', strtotime($currentEndTime . " +60 minutes"));
-
-                    $lunchbreak = true;
-                } else {
-                    $currentStartTime = date('h:i A', strtotime($currentEndTime));
-                    $currentEndTime = date('h:i A', strtotime($currentEndTime . " +" . $duration . " minutes"));
-                }
-
-                $noOfAppt--;
-            } while ($noOfAppt >= 1);
+        // Fetch appointments for the selected date
+        $sql_appointments = "SELECT starttime FROM tblappointment WHERE doc_id = $doctor_id AND schedule = '$selected_date'";
+        $appointments_result = $conn->query($sql_appointments);
+        $booked_slots = [];
+        while ($appointment = $appointments_result->fetch_assoc()) {
+            $booked_slots[] = $appointment['starttime'];
         }
-    } else {
-        $data[] = array('id' => 0, 'text' => 'No dates found', 'disabled' => true);
-    }
 
-    echo json_encode($data);
+        // Generate available time slots
+        $time_slots = generateTimeSlots($doctor_schedule['start_time'], $doctor_schedule['end_time'], $doctor_schedule['duration']);
+        $available_time_slots = array_diff($time_slots, $booked_slots);
+
+        // Return schedule data and available time slots as JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'available_time_slots' => array_values($available_time_slots)
+        ]);
+    } else {
+        echo json_encode(['error' => 'Schedule not found for the selected doctor.']);
+    }
 }
 
-if (isset($_GET['selectedSchedDateId'])) {
-    $schedId = $_GET['selectedSchedDateId'];
-    $today = date("Y-m-d");
-    $conflict = 0;
-    $previousEndTime = '';
-    $lunchbreak = false;
+function generateTimeSlots($start_time, $end_time, $duration)
+{
+    // Convert start and end times to DateTime objects
+    $start = new DateTime($start_time);
+    $end = new DateTime($end_time);
 
-    $data = array();
+    // Initialize an empty array to hold the time slots
+    $time_slots = [];
 
-    $sql = "SELECT * FROM schedule WHERE id='$schedId'";
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $day = date('F d, Y', strtotime($row['day']));
-            $startTime = $row['starttime'];
-            $endTime = $row['endtime'];
-            $duration = $row['duration'];
+    // Loop through the time period and generate slots based on duration
+    while ($start < $end) {
+        // Format the start time as a string (e.g., "9:00 AM")
+        $time_slots[] = $start->format('g:i A');
 
-            $totalNoOfMins = round(abs(strtotime($endTime) - strtotime($startTime)) / 60, 2);
-
-            $noOfAppt = ($totalNoOfMins - 60) / $duration;
-
-            $currentStartTime = date('h:i A', strtotime($startTime));
-            $currentEndTime = date('h:i A', strtotime($startTime . " " . $duration . " minutes"));
-
-            do {
-                $apptSQL = "SELECT * FROM tblappointment WHERE sched_id = '$schedId' AND starttime='$currentStartTime' AND endtime='$currentEndTime'";
-                $apptResult = mysqli_query($conn, $apptSQL);
-                if (mysqli_num_rows($apptResult) == 0) {
-                    $timeSched = $currentStartTime . "-" . $currentEndTime;
-                    if (date('H', strtotime($currentStartTime)) != 12) {
-                        $data[] = array('id' => $timeSched, 'text' => $timeSched);
-                    }
-                }
-
-                if (date('H', strtotime($currentEndTime)) == 12 && $lunchbreak == false) {
-                    $currentStartTime = date('h:i A', strtotime($currentEndTime));
-                    $currentEndTime = date('h:i A', strtotime($currentEndTime . " +60 minutes"));
-
-                    $lunchbreak = true;
-                } else {
-                    $currentStartTime = date('h:i A', strtotime($currentEndTime));
-                    $currentEndTime = date('h:i A', strtotime($currentEndTime . " +" . $duration . " minutes"));
-                }
-
-                $noOfAppt--;
-            } while ($noOfAppt >= 1);
-        }
-    } else {
-        $data[] = array('id' => 0, 'text' => 'No dates found', 'disabled' => true);
+        // Add the duration to the current time slot
+        $start->modify("+$duration minutes");
     }
 
-    echo json_encode($data);
+    return $time_slots;
 }
-
 ?>

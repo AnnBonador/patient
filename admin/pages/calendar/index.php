@@ -65,14 +65,15 @@ include('../../config/dbconn.php');
                           <div class="info-box-content">
                             <h3 class="text-center">
                               <?php
-                              $sql = "SELECT status FROM tblappointment WHERE status='Confirmed' ";
+                              $sql = "SELECT COUNT(*) AS total FROM tblappointment WHERE status IN ('Confirmed', 'Reschedule')";
                               $query_run = mysqli_query($conn, $sql);
 
-                              $row = mysqli_num_rows($query_run);
-                              echo $row;
+                              $row = mysqli_fetch_assoc($query_run); // Fetch the result as an associative array
+                              echo $row['total']; // Display the total count
                               ?>
                             </h3>
-                            <span class="info-box-text text-center">Confirmed</span>
+                            <span class="info-box-text text-center">Confirmed and Rescheduled</span>
+
                           </div>
                         </div>
                       </div>
@@ -117,7 +118,14 @@ include('../../config/dbconn.php');
 
     </div>
     <?php
-    $query = $conn->query("SELECT a.*, CONCAT(p.fname,' ',p.lname) AS pname, CONCAT(a.schedule, ' ', a.starttime) as timestamp, CONCAT(a.schedule, ' ', a.endtime) as enddate FROM tblappointment a INNER JOIN tblpatient p WHERE p.id = a.patient_id AND status = 'Confirmed' ");
+    $query = $conn->query("SELECT a.*, CONCAT(p.fname, ' ', p.lname) AS pname, 
+    CONCAT(a.schedule, ' ', a.starttime) AS timestamp, 
+    CONCAT(a.schedule, ' ', a.endtime) AS enddate 
+    FROM tblappointment a 
+    INNER JOIN tblpatient p 
+    WHERE p.id = a.patient_id 
+    AND a.status IN ('Confirmed', 'Reschedule')");
+
     $sched_arr = json_encode($query->fetch_all(MYSQLI_ASSOC));
     ?>
     <?php include('../../includes/scripts.php'); ?>
@@ -153,8 +161,8 @@ include('../../config/dbconn.php');
 
         var date = new Date()
         var d = date.getDate(),
-        m = date.getMonth(),
-        y = date.getFullYear()
+          m = date.getMonth(),
+          y = date.getFullYear()
         var scheds = $.parseJSON('<?php echo ($sched_arr) ?>');
         var Calendar = FullCalendar.Calendar;
         var Draggable = FullCalendar.Draggable;
@@ -183,7 +191,7 @@ include('../../config/dbconn.php');
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
           },
 
-  
+
           events: function(event, successCallback) {
             var events = []
             Object.keys(scheds).map(k => {

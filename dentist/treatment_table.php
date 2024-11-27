@@ -7,7 +7,7 @@ $table = <<<EOT
             SELECT 
                 p.fname,
                 p.lname,
-                s.day,
+                t.visit,
                 t.teeth,
                 t.treatment,
                 t.file_name,
@@ -17,7 +17,6 @@ $table = <<<EOT
                 t.id 
             FROM treatment t 
             INNER JOIN tblpatient p ON t.patient_id = p.id
-            INNER JOIN schedule s ON s.id = t.visit
             WHERE t.doc_id='$id'
         ) temp
         EOT;
@@ -30,7 +29,7 @@ $primaryKey = 'id';
 $columns = array(
     array('db' => 'fname', 'dt' => 'fname'),
     array('db' => 'lname', 'dt' => 'lname'),
-    array('db' => 'day',  'dt' => 'day'),
+    array('db' => 'visit',  'dt' => 'visit'),
     array('db' => 'treatment',  'dt' => 'treatment'),
     array('db' => 'teeth',  'dt' => 'teeth'),
     array('db' => 'complaint',  'dt' => 'complaint'),

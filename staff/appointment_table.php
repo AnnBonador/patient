@@ -11,7 +11,6 @@
         array( 'db' => 'created_at',  'dt' => 'created_at' ),
         array( 'db' => 'schedule',   'dt' => 'schedule' ),
         array( 'db' => 'starttime',  'dt' => 'starttime' ),
-        array( 'db' => 'endtime',   'dt' => 'endtime' ),
         array( 'db' => 'status',   'dt' => 'status' ),
         array( 'db' => 'id',   'dt' => 'id' ),
     );

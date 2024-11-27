@@ -297,10 +297,7 @@ include('../admin/config/dbconn.php');
             }
           },
           {
-            "data": "day",
-            render: function(data, type, row) {
-              return moment(data).format("DD-MMM-YYYY")
-            }
+            "data": "visit",
           },
           {
             "data": "treatment"

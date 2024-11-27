@@ -76,7 +76,7 @@ include('../admin/config/dbconn.php');
                   <div class="form-group">
                     <label>Service</label>
                     <span class="text-danger">*</span>
-                    <select class="select2" multiple="multiple" name="service[]" id="edit_reason" style="width: 100%;" required>
+                    <select multiple="multiple" name="service[]" id="edit_reason" style="width: 100%;" required>
                       <?php
                       $sql = "SELECT * FROM procedures ORDER BY procedures ASC";
                       $query_run = mysqli_query($conn, $sql);
@@ -198,8 +198,7 @@ include('../admin/config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th>Action</th>
                           </tr>
@@ -213,8 +212,7 @@ include('../admin/config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th>Action</th>
                           </tr>
@@ -228,8 +226,7 @@ include('../admin/config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th>Action</th>
                           </tr>
@@ -243,8 +240,7 @@ include('../admin/config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th>Action</th>
                           </tr>
@@ -258,8 +254,7 @@ include('../admin/config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th>Action</th>
                           </tr>
@@ -375,9 +370,6 @@ include('../admin/config/dbconn.php');
           },
           {
             "data": "starttime"
-          },
-          {
-            "data": "endtime"
           },
           {
             "data": 'status',
@@ -508,9 +500,6 @@ include('../admin/config/dbconn.php');
             "data": "starttime"
           },
           {
-            "data": "endtime"
-          },
-          {
             "data": 'status',
             render: function(data, type, row) {
               if (data == 'Treated') {
@@ -610,9 +599,6 @@ include('../admin/config/dbconn.php');
           },
           {
             "data": "starttime"
-          },
-          {
-            "data": "endtime"
           },
           {
             "data": 'status',
@@ -716,9 +702,6 @@ include('../admin/config/dbconn.php');
             "data": "starttime"
           },
           {
-            "data": "endtime"
-          },
-          {
             "data": 'status',
             render: function(data, type, row) {
               if (data == 'Reschedule') {
@@ -817,9 +800,6 @@ include('../admin/config/dbconn.php');
           },
           {
             "data": "starttime"
-          },
-          {
-            "data": "endtime"
           },
           {
             "data": 'status',

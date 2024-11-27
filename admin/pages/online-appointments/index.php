@@ -282,8 +282,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Payment Option</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
@@ -298,8 +297,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Payment Option</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
@@ -314,8 +312,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Payment Option</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
@@ -330,8 +327,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Payment Option</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
@@ -346,8 +342,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Payment Option</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
@@ -362,8 +357,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Payment Option</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>

@@ -228,7 +228,7 @@ include('../../config/dbconn.php');
                   <div class="form-group">
                     <label>Select Doctor</label>
                     <span class="text-danger">*</span>
-                    <select class="form-control select2 dentist" name="doc_id" id="preferredDentistEdit" style="width:100%;" required>
+                    <select class="form-control dentist" name="doc_id" id="preferredDentistEdit" style="width:100%;" required>
                       <?php
                       if (isset($_GET['id'])) {
                         echo $id = $_GET['id'];
@@ -425,8 +425,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
                           </tr>
@@ -440,8 +439,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
                           </tr>
@@ -455,8 +453,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
                           </tr>
@@ -470,8 +467,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
                           </tr>
@@ -485,8 +481,7 @@ include('../../config/dbconn.php');
                             <th class="export">Patient</th>
                             <th class="export">Date Submitted</th>
                             <th class="export">Appointment Date</th>
-                            <th class="export">Start Time</th>
-                            <th class="export">End Time</th>
+                            <th class="export">Time</th>
                             <th class="export">Status</th>
                             <th width="15%">Action</th>
                           </tr>

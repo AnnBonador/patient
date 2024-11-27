@@ -72,7 +72,6 @@ $(document).ready(function () {
 				},
 			},
 			{ data: "starttime" },
-			{ data: "endtime" },
 			{
 				data: "status",
 				render: function (data, type, row) {
@@ -181,7 +180,6 @@ $(document).ready(function () {
 				},
 			},
 			{ data: "starttime" },
-			{ data: "endtime" },
 			{
 				data: "status",
 				render: function (data, type, row) {
@@ -281,7 +279,6 @@ $(document).ready(function () {
 				},
 			},
 			{ data: "starttime" },
-			{ data: "endtime" },
 			{
 				data: "status",
 				render: function (data, type, row) {
@@ -381,7 +378,6 @@ $(document).ready(function () {
 				},
 			},
 			{ data: "starttime" },
-			{ data: "endtime" },
 			{
 				data: "status",
 				render: function (data, type, row) {
@@ -481,7 +477,6 @@ $(document).ready(function () {
 				},
 			},
 			{ data: "starttime" },
-			{ data: "endtime" },
 			{
 				data: "status",
 				render: function (data, type, row) {
@@ -533,7 +528,6 @@ $(document).ready(function () {
 $(document).ready(function () {
 	initializeSelect2(".patient", "Select Patient");
 	initializeSelect2(".dentist", "Select Dentist");
-	initializeSelect2(".treatment", "Select Treatment");
 	initializeSelect2("#service", "Select Service");
 	initializeSelect2("#edit_reason", "Select Service");
 

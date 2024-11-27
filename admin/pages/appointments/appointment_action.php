@@ -185,7 +185,7 @@ if (isset($_POST['insert_appointment'])) {
             $text = 'Your appointment has been confirmed. Please try to arrive 10-15 minutes early and don\'t forget to wear your face mask. If you have any queries, or need to reschedule, please call our office at ' . $system_contact . ' or drop us a mail ' . $system_email . '. We look forward to seeing you on ' . $patient_date . ' ' . $selectedTime . '. ';
             sendTextMessage($patient_name, $patient_phone, $text);
         }
-        if (isset($_POST['send-email'])) {
+        if (isset($send_email)) {
             sendEmail($patient_name, $patient_email, $patient_date, $selectedTime, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name);
         }
 
@@ -299,7 +299,7 @@ if (isset($_POST['update_appointment'])) {
             sendTextMessage($patient_name, $patient_phone, $text);
             cancelledEmail($patient_name, $patient_email, $patient_date, $selectedTime, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name, $mobile);
         }
-        if (isset($_POST['send-email'])) {
+        if (isset($send_email)) {
             sendEmail($patient_name, $patient_email, $patient_date, $selectedTime, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name);
         }
         $_SESSION['success'] = "Appointment Updated Successfully";
