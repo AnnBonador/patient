@@ -117,6 +117,7 @@ function cancelledEmail($patient_name, $patient_email, $patient_date, $patient_t
     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
   }
 }
+
 if (isset($_POST['checking_editbtn'])) {
   $s_id = $_POST['app_id'];
 
@@ -125,19 +126,18 @@ if (isset($_POST['checking_editbtn'])) {
 
   if (mysqli_num_rows($query_run) > 0) {
     foreach ($query_run as $row) {
-      $sched =  date('F d, Y', strtotime($row['schedule']));
-      $time = date('h:i A', strtotime($row['starttime'])) . "-" . date('h:i A', strtotime($row['endtime']));
+      $sched = DateTime::createFromFormat('Y-m-d', $row['schedule'])->format('m/d/Y');
       $result_array = array(
         'id' => $row['id'],
         'patient_id' => $row['patient_id'],
-        'patient_name' => $row['patient_name'],
         'doc_id' => $row['doc_id'],
         'schedule' => $sched,
-        'time' => $time,
+        'starttime' => $row['starttime'],
         'sched_id' => $row['sched_id'],
         'reason' => $row['reason'],
         'status' => $row['status'],
-        'bgcolor' => $row['bgcolor']
+        'bgcolor' => $row['bgcolor'],
+        'follow_up' => $row['follow_up']
       );
     }
     header('Content-type: application/json');
@@ -148,74 +148,93 @@ if (isset($_POST['checking_editbtn'])) {
 }
 
 if (isset($_POST['update_appointment'])) {
+
   $services = '';
   $id = $_POST['edit_id'];
-  $doctor_id = $_POST['select_dentist'];
   $patient_id = $_POST['select_patient'];
-  $schedule_id = $_POST['scheddate'];
-  $selectedTime = $_POST['schedTime'];
-  $preferredTime = explode("-", $selectedTime);
-  $s_time = $preferredTime[0];
-  $e_time = $preferredTime[1];
+  $doctor_id = $_POST['doc_id'];
+
+  $scheddate = $_POST['scheddate'];
+  $date = DateTime::createFromFormat('m/d/Y', $scheddate);
+  $schedule = $date->format('Y-m-d');
+
+  $follow_up = isset($_POST['follow_up']) ? 1 : 0;
+
+  $selectedTime = $_POST['selected_time_slot'];
+
   foreach ($_POST['service'] as $selectedService) {
     $services .= $selectedService . ",";
   }
   $treatment = rtrim($services, ", ");
 
-  $sql = "SELECT * FROM schedule WHERE id='$schedule_id'";
+  $sql = "SELECT id FROM schedule WHERE doc_id='$doctor_id'";
   $query_run = mysqli_query($conn, $sql);
-  if (mysqli_num_rows($query_run) > 0) {
-    foreach ($query_run as $row) {
-      $schedule = $row['day'];
-    }
-  }
+  $schedule_id = mysqli_fetch_assoc($query_run)['id'];
 
   $status = $_POST['status'];
   $bgcolor = $_POST['color'];
   $subject = 'Confirmed your Appointment';
   $type = '1';
   $cancelled = 'Cancelled your Appointment';
+
   $send_email = $_POST['send-email'];
+
   $date_submitted = date('Y-m-d H:i:s');
 
-  $sql = "UPDATE tblappointment set reason='$treatment',status='$status',bgcolor='$bgcolor' WHERE id='$id' ";
+  $sql = "UPDATE tblappointment set doc_id='$doctor_id',schedule='$schedule',starttime='$selectedTime', reason='$treatment',status='$status',bgcolor='$bgcolor',follow_up='$follow_up' WHERE id='$id' ";
   $query_run = mysqli_query($conn, $sql);
 
-  $systemlogo = "SELECT * from system_details";
-  $systemdetails = mysqli_query($conn, $systemlogo);
-  $systemdata = mysqli_fetch_array($systemdetails);
-  $system_logo = $systemdata['brand'];
-  $system_address = $systemdata['address'];
-  $system_mobile = $systemdata['mobile'];
-  $system_email = $systemdata['email'];
+  if ($status == 'Treated') {
+    $check_app = mysqli_query($conn, "SELECT appointment_id FROM treatment where appointment_id = '$id' ");
+    if (mysqli_num_rows($check_app) > 0) {
+    } else {
+      $sql = "INSERT INTO treatment (appointment_id,patient_id,doc_id,visit,treatment,created_at) VALUES ('$id','$patient_id','$doctor_id','$schedule','$treatment','$date_submitted')";
+      $query_run = mysqli_query($conn, $sql);
+    }
+  } else {
+    $check_app = mysqli_query($conn, "SELECT appointment_id FROM treatment where appointment_id = '$id' ");
+    if (mysqli_num_rows($check_app) > 0) {
+      $sql = "DELETE FROM treatment WHERE appointment_id = '$id'";
+      $query_run = mysqli_query($conn, $sql);
+    }
+  }
 
-  $fulldata = "SELECT a.*, CONCAT(p.fname,' ',p.lname) AS pname,p.lname,p.phone,p.email,a.starttime,a.created_at FROM tblappointment a INNER JOIN tblpatient p ON p.id ='$patient_id' WHERE a.id='$id'";
-  $appdetails = mysqli_query($conn, $fulldata);
-  $patient_data = mysqli_fetch_array($appdetails);
-  $patient_name = $patient_data['pname'];
-  $patient_lname = $patient_data['lname'];
-  $date_submission = date('l, F j, Y', strtotime($patient_data['created_at']));
-  $patient_email = $patient_data['email'];
-  $patient_date = date('l, F j, Y', strtotime($patient_data['schedule']));
-  $patient_phone = $patient_data['phone'];
-  $patient_time = $patient_data['starttime'];
+
+  $sql = "SELECT * from system_details";
+  $query_run = mysqli_query($conn, $sql);
+  if (mysqli_num_rows($query_run) > 0) {
+    foreach ($query_run as $row) {
+      $system_logo = $row['brand'];
+      $system_contact = $row['mobile'];
+      $system_email = $row['email'];
+    }
+  }
+
+  $sql = "SELECT a.*, CONCAT(p.fname,' ',p.lname) AS pname,p.lname,p.phone,p.email,a.created_at FROM tblappointment a INNER JOIN tblpatient p ON p.id ='$patient_id' WHERE a.id='$id'";
+  $query_run = mysqli_query($conn, $sql);
+  if (mysqli_num_rows($query_run) > 0) {
+    foreach ($query_run as $row) {
+      $patient_name = $row['pname'];
+      $patient_lname = $row['lname'];
+      $date_submission = date('l, F j, Y', strtotime($row['created_at']));
+      $patient_email = $row['email'];
+      $patient_date = date('l, F j, Y', strtotime($row['schedule']));
+      $patient_phone = $row['phone'];
+      $patient_time = $selectedTime;
+    }
+  }
 
   if ($query_run) {
-
     if ($status == 'Confirmed') {
-      $sql = "INSERT INTO notification (patient_id,doc_id,subject,type,created_at) VALUES ('$patient_id',$doctor_id,'$subject','$type','$date_submitted')";
-      $query_run = mysqli_query($conn, $sql);
       $text = 'Your appointment has been confirmed. Please try to arrive 10-15 minutes early and don\'t forget to wear your face mask. If you have any queries, or need to reschedule, please call our office at ' . $system_contact . ' or drop us a mail ' . $system_email . '. We look forward to seeing you on ' . $patient_date . ' ' . $patient_time . '. ';
       sendTextMessage($patient_name, $patient_phone, $text);
     } else if ($status == 'Cancelled') {
-      $sql = "INSERT INTO notification (patient_id,doc_id,subject,type,created_at) VALUES ('$patient_id',$doctor_id,'$cancelled','$type','$date_submitted')";
-      $query_run = mysqli_query($conn, $sql);
       $text = 'Your appointment has been cancelled.';
       sendTextMessage($patient_name, $patient_phone, $text);
       cancelledEmail($patient_name, $patient_email, $patient_date, $patient_time, $patient_phone, $treatment, $date_submission, $mail_username, $mail_host, $mail_password, $system_name, $mobile);
     }
 
-    if (!empty($_POST['send-email'])) {
+    if (isset($send_email)) {
       $mpdf = new \Mpdf\Mpdf();
       $answer = array();
       $qanda = "SELECT h.answer,h.question_id,q.questions from health_declaration h INNER JOIN questionnaires q ON h.question_id = q.id WHERE h.patient_id = '$patient_id'";
@@ -335,5 +354,92 @@ if (isset($_POST['checking_data'])) {
     }
   }
 }
+
+if (isset($_GET['dentist'])) {
+  $doctor_id = $_GET['doctor_id'];
+
+  $sql = "SELECT * FROM schedule WHERE doc_id = $doctor_id";
+  $result = $conn->query($sql);
+
+  if ($result->num_rows > 0) {
+
+      $schedule = $result->fetch_assoc();
+      $doctor_schedule = [
+          'available_days' => json_decode($schedule['day']),
+      ];
+
+      header('Content-Type: application/json');
+      echo json_encode($doctor_schedule);
+  } else {
+      echo json_encode(['error' => 'Schedule not found for the selected doctor.']);
+  }
+}
+
+if (isset($_GET['timeslots'])) {
+  $doctor_id = $_GET['doctor_id'];
+
+  $date = $_GET['date'];
+  $dateTime = DateTime::createFromFormat('m/d/Y', $date);
+  $selected_date = $dateTime->format('Y-m-d');
+
+  // Fetch the doctor's schedule from the database
+  $sql = "SELECT * FROM schedule WHERE doc_id = $doctor_id";
+  $result = $conn->query($sql);
+
+  if ($result->num_rows > 0) {
+    // Fetch schedule data
+    $schedule = $result->fetch_assoc();
+    $doctor_schedule = [
+      'doctor_id' => $schedule['doc_id'],
+      'doctor_name' => $schedule['doc_name'],
+      'available_days' => json_decode($schedule['day']),
+      'start_time' => $schedule['starttime'],
+      'end_time' => $schedule['endtime'],
+      'duration' => $schedule['duration']
+    ];
+
+    // Fetch appointments for the selected date
+    $sql_appointments = "SELECT starttime FROM tblappointment WHERE doc_id = $doctor_id AND schedule = '$selected_date'";
+    $appointments_result = $conn->query($sql_appointments);
+    $booked_slots = [];
+    while ($appointment = $appointments_result->fetch_assoc()) {
+      $booked_slots[] = $appointment['starttime'];
+    }
+
+    // Generate available time slots
+    $time_slots = generateTimeSlots($doctor_schedule['start_time'], $doctor_schedule['end_time'], $doctor_schedule['duration']);
+    $available_time_slots = array_diff($time_slots, $booked_slots);
+
+    // Return schedule data and available time slots as JSON
+    header('Content-Type: application/json');
+    echo json_encode([
+      'available_time_slots' => array_values($available_time_slots)
+    ]);
+  } else {
+    echo json_encode(['error' => 'Schedule not found for the selected doctor.']);
+  }
+}
+
+function generateTimeSlots($start_time, $end_time, $duration)
+{
+  // Convert start and end times to DateTime objects
+  $start = new DateTime($start_time);
+  $end = new DateTime($end_time);
+
+  // Initialize an empty array to hold the time slots
+  $time_slots = [];
+
+  // Loop through the time period and generate slots based on duration
+  while ($start < $end) {
+    // Format the start time as a string (e.g., "9:00 AM")
+    $time_slots[] = $start->format('g:i A');
+
+    // Add the duration to the current time slot
+    $start->modify("+$duration minutes");
+  }
+
+  return $time_slots;
+}
+
 
 ?>

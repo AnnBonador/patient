@@ -220,7 +220,7 @@ if (isset($_POST['update_appointment'])) {
       $patient_email = $row['email'];
       $patient_date = date('l, F j, Y', strtotime($row['schedule']));
       $patient_phone = $row['phone'];
-      $patient_time = $s_time;
+      $patient_time = $selectedTime;
     }
   }
 

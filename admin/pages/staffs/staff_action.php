@@ -73,54 +73,49 @@ if (isset($_POST['updatestaff'])) {
         UNION ALL SELECT email FROM tbldoctor WHERE email='$staff_email' ";
     $checkemail_run = mysqli_query($conn, $checkemail);
 
-    if ($password == $confirmPassword) {
-        if (mysqli_num_rows($checkemail_run) > 0) {
-            $_SESSION['error'] = "Email Already Exist";
-            header('Location:index.php');
-        } else {
-            $update_filename = " ";
+    if (mysqli_num_rows($checkemail_run) > 0) {
+        $_SESSION['error'] = "Email Already Exist";
+        header('Location:index.php');
+    } else {
+        $update_filename = " ";
 
-            if ($image != NULL) {
+        if ($image != NULL) {
 
-                $allowed_file_format = array('jpg', 'png', 'jpeg');
+            $allowed_file_format = array('jpg', 'png', 'jpeg');
 
-                $image_extension = pathinfo($image, PATHINFO_EXTENSION);
+            $image_extension = pathinfo($image, PATHINFO_EXTENSION);
 
-                if (!in_array($image_extension, $allowed_file_format)) {
-                    $_SESSION['error'] = "Upload valiid file. jpg, png";
-                    header('Location:index.php');
-                } else if (($_FILES["edit_docimage"]["size"] > 5000000)) {
-                    $_SESSION['error'] = "File size exceeds 5MB";
-                    header('Location:index.php');
-                } else {
-                    $filename = time() . '.' . $image_extension;
-                    $update_filename = $filename;
-                }
+            if (!in_array($image_extension, $allowed_file_format)) {
+                $_SESSION['error'] = "Upload valiid file. jpg, png";
+                header('Location:index.php');
+            } else if (($_FILES["edit_docimage"]["size"] > 5000000)) {
+                $_SESSION['error'] = "File size exceeds 5MB";
+                header('Location:index.php');
             } else {
-                $update_filename = $old_image;
+                $filename = time() . '.' . $image_extension;
+                $update_filename = $filename;
             }
-            if ($_SESSION['error'] == '') {
-                $sql = "UPDATE tblstaff set name='$fname',address='$address',dob='$dob', gender='$gender', phone='$phone', email='$staff_email', password='$password', image='$update_filename' WHERE id='$id' ";
-                $query_run = mysqli_query($conn, $sql);
+        } else {
+            $update_filename = $old_image;
+        }
+        if ($_SESSION['error'] == '') {
+            $sql = "UPDATE tblstaff set name='$fname',address='$address',dob='$dob', gender='$gender', phone='$phone', email='$staff_email', password='$password', image='$update_filename' WHERE id='$id' ";
+            $query_run = mysqli_query($conn, $sql);
 
-                if ($query_run) {
-                    if ($image != NULL) {
-                        if (file_exists('../../../upload/staff/' . $old_image)) {
-                            unlink("../../../upload/staff/" . $old_image);
-                        }
-                        move_uploaded_file($_FILES['edit_docimage']['tmp_name'], '../../../upload/staff/' . $update_filename);
+            if ($query_run) {
+                if ($image != NULL) {
+                    if (file_exists('../../../upload/staff/' . $old_image)) {
+                        unlink("../../../upload/staff/" . $old_image);
                     }
-                    $_SESSION['success'] = "Staff Updated Successfully";
-                    header('Location:index.php');
-                } else {
-                    $_SESSION['error'] = "Staff Updated Unsuccessfully";
-                    header('Location:index.php');
+                    move_uploaded_file($_FILES['edit_docimage']['tmp_name'], '../../../upload/staff/' . $update_filename);
                 }
+                $_SESSION['success'] = "Staff Updated Successfully";
+                header('Location:index.php');
+            } else {
+                $_SESSION['error'] = "Staff Updated Unsuccessfully";
+                header('Location:index.php');
             }
         }
-    } else {
-        $_SESSION['error'] = "Password does not match";
-        header('Location:index.php');
     }
 }
 

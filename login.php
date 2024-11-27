@@ -54,7 +54,7 @@ if (isset($_SESSION['auth'])) {
                     <input type="password" name="password" id="password" class="form-control" placeholder="Password" />
                     <div class="input-group-append">
                         <div class="input-group-text">
-                            <i class="fas fa-eye"></i>
+                            <i class="fas fa-eye" id="eye"></i>
                         </div>
                     </div>
                     <div class="invalid-feedback" id="password-error"></div>
