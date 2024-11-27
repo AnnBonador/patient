@@ -71,7 +71,7 @@ include('../../config/dbconn.php');
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label for="">Teeth No./s</label>
-                    <input type="number" name="teeth" id="edit_teeth" min="0" class="form-control">
+                    <input type="text" name="teeth" id="edit_teeth" class="form-control">
                   </div>
                 </div>
                 <div class="col-sm-12">

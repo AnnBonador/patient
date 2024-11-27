@@ -707,7 +707,7 @@ include('../admin/config/dbconn.php');
                                                             if (isset($_GET['id'])) {
                                                                 $i = 1;
                                                                 $user_id = $_GET['id'];
-                                                                $sql = "SELECT CONCAT(p.fname,'',p.lname) as pname,t.id,s.day,t.teeth,t.complaint,t.treatment,t.fees,t.remarks FROM treatment t INNER JOIN tblpatient p ON t.patient_id = p.id INNER JOIN schedule s ON s.id = t.visit WHERE t.patient_id='$user_id'";
+                                                                $sql = "SELECT CONCAT(p.fname,'',p.lname) as pname,t.id,t.visit,t.teeth,t.complaint,t.treatment,t.fees,t.remarks FROM treatment t INNER JOIN tblpatient p ON t.patient_id = p.id WHERE t.patient_id='$user_id'";
 
                                                                 $users_run = mysqli_query($conn, $sql);
 
@@ -717,7 +717,7 @@ include('../admin/config/dbconn.php');
 
                                                                         <tr>
                                                                             <td style="width:10px; text-align:center;"><?php echo $i++; ?></td>
-                                                                            <td><?= date('d-M-Y', strtotime($row['day'])); ?></td>
+                                                                            <td><?= date('d-M-Y', strtotime($row['visit'])); ?></td>
                                                                             <td><?= $row['treatment'] ?></td>
                                                                             <td><?= $row['teeth'] ?></td>
                                                                             <td><?= $row['complaint'] ?></td>

@@ -305,12 +305,12 @@ include('includes/sidebar.php');
                                     <tbody>
                                        <?php
                                        $id = $_SESSION['auth_user']['user_id'];
-                                       $sql = "SELECT CONCAT(p.fname,'',p.lname) as pname,t.id,t.teeth,t.complaint,t.treatment,t.fees,t.remarks,t.file_name,s.day FROM treatment t INNER JOIN tblpatient p ON t.patient_id = p.id INNER JOIN schedule s ON s.id = t.visit WHERE patient_id ='$id' ORDER BY id DESC";
+                                       $sql = "SELECT CONCAT(p.fname,'',p.lname) as pname,t.id,t.teeth,t.complaint,t.treatment,t.fees,t.remarks,t.file_name,t.visit FROM treatment t INNER JOIN tblpatient p ON t.patient_id = p.id WHERE patient_id ='$id' ORDER BY id DESC";
                                        $query_run = mysqli_query($conn, $sql);
                                        while ($row = mysqli_fetch_array($query_run)) {
                                        ?>
                                           <tr>
-                                             <td><?= date('F j, Y', strtotime($row['day'])); ?></td>
+                                             <td><?= date('F j, Y', strtotime($row['visit'])); ?></td>
                                              <td><?= $row['treatment'] ?></td>
                                              <td><?= $row['teeth'] ?></td>
                                              <td><?= $row['complaint'] ?></td>
